@@ -29,6 +29,14 @@
 namespace sentencepiece {
 namespace flags {
 
+// DOC:
+// 用于保存模型训练参数。
+//
+// 成员变量:
+//      type -- 表示Flag参数的数据类型
+//      storage -- 指向Flag参数值的指针
+//      default_storage -- 指向Flag参数默认值的指针
+//      help -- Flag参数的帮助信息
 struct Flag {
   int type;
   void *storage;
@@ -36,19 +44,50 @@ struct Flag {
   std::string help;
 };
 
+// DOC:
+// 表示最小日志等级。
 static int32 g_minloglevel = 0;
 
+// DOC:
+// 返回最小日志等级。
+//
+// 返回:
+//      一个int型表示最小日志等级。
 int GetMinLogLevel() { return g_minloglevel; }
+
+// DOC:
+// 设置最小日志等级。
+//
+// 参数:
+//      minloglevel -- 最小日志等级
 void SetMinLogLevel(int minloglevel) { g_minloglevel = minloglevel; }
 
 namespace {
+// DOC:
+// 使用FlagMap别名，用于保存所有Flag。
 using FlagMap = std::map<std::string, Flag *>;
 
+// DOC:
+// 返回FlagMap指针。
+//
+// 返回:
+//      FlagMap指针。
 FlagMap *GetFlagMap() {
   static FlagMap flag_map;
   return &flag_map;
 }
 
+// DOC:
+// 设置Flag值。如果Flag name不存在，则设置失败。
+// 如果value值为空，对于bool类型Flag，默认值为"true"，
+// 对于std::string类型Flag，默认值为""，其它类型则设置失败。
+//
+// 参数:
+//      name -- Flag名
+//      value -- Flag值
+//
+// 返回:
+//      一个bool类型值，表示是否设置成功。
 bool SetFlag(const std::string &name, const std::string &value) {
   auto it = GetFlagMap()->find(name);
   if (it == GetFlagMap()->end()) {
@@ -94,6 +133,18 @@ bool SetFlag(const std::string &name, const std::string &value) {
   return true;
 }  // namespace
 
+// DOC:
+// 载入命令行Flag参数到key, value中。
+//
+// 参数:
+//      argc -- 命令行参数数量
+//      argv -- 命令行参数字符串数组
+//      key -- Flag name指针
+//      value -- Flag value指针
+//      used_args -- 表示该Flag的字符串数量
+//
+// 返回:
+//      一个bool类型值，表示命令行Flag参数载入成功与否。
 bool CommandLineGetFlag(int argc, char **argv, std::string *key,
                         std::string *value, int *used_args) {
   key->clear();
@@ -132,6 +183,15 @@ bool CommandLineGetFlag(int argc, char **argv, std::string *key,
 }
 }  // namespace
 
+// DOC:
+// 初始化FlagRegister，创建Flag，并加入FlagMap中。
+//
+// 成员变量:
+//      name -- Flag的名称
+//      storage -- 指向Flag参数值的指针
+//      default_storage -- 指向Flag参数默认值的指针
+//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
+//      help -- Flag参数的帮助信息
 FlagRegister::FlagRegister(const char *name, void *storage,
                            const void *default_storage, int shortype,
                            const char *help)
@@ -145,6 +205,14 @@ FlagRegister::FlagRegister(const char *name, void *storage,
 
 FlagRegister::~FlagRegister() {}
 
+// DOC:
+// 返回一个字符串，描述了sentencepiece的命令行参数用法。
+// 其中包括命令行参数的数据类型及默认值。
+//
+// 参数:
+//      programname -- 程序名，用于表示程序的名称
+// 返回:
+//      一个描述了sentencepiece的命令行参数用法的字符串。
 std::string PrintHelp(const char *programname) {
   std::ostringstream os;
   os << PACKAGE_STRING << "\n\n";
@@ -194,6 +262,17 @@ std::string PrintHelp(const char *programname) {
   return os.str();
 }
 
+// DOC:
+// 解析命令行参数并修改对应Flag。
+// 如果命令行参数为"help"，则打印帮助信息；
+// 如果命令行参数为"version"，则打印版本号信息；
+// 如果命令行参数为"minloglevel"，则打印最小日志登记；
+// 否则解析命令行参数并修改对应Flag。
+//
+// 参数:
+//      argc -- 传入命令行参数个数
+//      argv -- 命令行参数字符串数组
+//      rest_args -- 额外的参数
 void ParseCommandLineFlags(int argc, char **argv,
                            std::vector<std::string> *rest_flags) {
   int used_argc = 0;

@@ -8,6 +8,7 @@ Makefile.in
 /build
 /cmake-build-debug
 .idea
+.czrc
 
 /autom4te.cache
 /autoscan.log
