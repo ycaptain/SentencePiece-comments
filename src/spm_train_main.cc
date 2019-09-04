@@ -26,6 +26,7 @@ static sentencepiece::TrainerSpec kDefaultTrainerSpec;
 static sentencepiece::NormalizerSpec kDefaultNormalizerSpec;
 }  // namespace
 
+// 初始化flags，定义模型训练参数的数据类型，名称，默认值和帮助信息
 DEFINE_string(input, "", "comma separated list of input sentences");
 DEFINE_string(input_format, kDefaultTrainerSpec.input_format(),
               "Input format. Supported format is `text` or `tsv`.");
@@ -105,20 +106,48 @@ DEFINE_string(unk_surface, kDefaultTrainerSpec.unk_surface(),
               "Dummy surface string for <unk>. In decoding <unk> is decoded to "
               "`unk_surface`.");
 
+// DOC:
+// trainer主函数，载入命令行参数，正规化语料库，训练子词分词模型，
+// 生成分词模型.model，语料映射.vocab文件。
+//
+// Example:
+//      $spm_train_main --input=data/botchan.txt --model_prefix=m --vocab_size=1000
 int main(int argc, char *argv[]) {
+  // DOC:
+  // 解析命令行参数并修改对应Flag
   sentencepiece::flags::ParseCommandLineFlags(argc, argv);
+  // trainer参数
   sentencepiece::TrainerSpec trainer_spec;
+  // normalizaer参数
   sentencepiece::NormalizerSpec normalizer_spec;
 
+  // 检测Flag参数input, model_prefix是否为空，
+  // 为空则打印错误和帮助信息到控制台并退出
   CHECK_OR_HELP(input);
   CHECK_OR_HELP(model_prefix);
 
+// DOC:
+// 从flags中获取参数并填充到trainer中
+//
+// 参数:
+//      name -- Flag参数名
 // Populates the value from flags to spec.
 #define SetTrainerSpecFromFlag(name) trainer_spec.set_##name(FLAGS_##name);
 
+// DOC:
+// 从flags中获取参数并填充到normalizaer中
+//
+// 参数:
+//      name -- Flag参数名
 #define SetNormalizerSpecFromFlag(name) \
   normalizer_spec.set_##name(FLAGS_##name);
 
+// DOC:
+// 从flags中获取可重复参数并填充到trainer中
+//
+// 参数:
+//      name -- Flag参数名
+// Populates the value from flags to spec.
 #define SetRepeatedTrainerSpecFromFlag(name)                     \
   if (!FLAGS_##name.empty()) {                                   \
     for (const auto v :                                          \
@@ -127,6 +156,8 @@ int main(int argc, char *argv[]) {
     }                                                            \
   }
 
+  // DOC:
+  // 从flags中获取参数并填充到trainer中
   SetTrainerSpecFromFlag(input_format);
   SetTrainerSpecFromFlag(model_prefix);
   SetTrainerSpecFromFlag(vocab_size);
@@ -160,20 +191,29 @@ int main(int argc, char *argv[]) {
   SetRepeatedTrainerSpecFromFlag(control_symbols);
   SetRepeatedTrainerSpecFromFlag(user_defined_symbols);
 
+  // DOC:
+  // 设置正规化规则
+  // 从flags中获取参数并填充到normalizer中
   normalizer_spec.set_name(FLAGS_normalization_rule_name);
   SetNormalizerSpecFromFlag(normalization_rule_tsv);
   SetNormalizerSpecFromFlag(add_dummy_prefix);
   SetNormalizerSpecFromFlag(remove_extra_whitespaces);
 
+  // DOC:
+  // 创建模型类型map
   const std::map<std::string, TrainerSpec::ModelType> kModelTypeMap = {
       {"unigram", TrainerSpec::UNIGRAM},
       {"bpe", TrainerSpec::BPE},
       {"word", TrainerSpec::WORD},
       {"char", TrainerSpec::CHAR}};
 
+  // DOC:
+  // 设置trainer模型类型
   trainer_spec.set_model_type(sentencepiece::port::FindOrDie(
       kModelTypeMap, sentencepiece::string_util::ToLower(FLAGS_model_type)));
 
+  // DOC:
+  // 训练模型，检测是否成功
   CHECK_OK(sentencepiece::SentencePieceTrainer::Train(trainer_spec,
                                                       normalizer_spec));
 
