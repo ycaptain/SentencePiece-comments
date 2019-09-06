@@ -23,26 +23,38 @@
 namespace sentencepiece {
 namespace normalizer {
 namespace {
+// DOC:
+// 将要替换空格的 ▁ 字符，Lower One Eighth Block，U+2581
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// DOC:
+// Unicode Specials 区的 Replacement Char 替换字符 �，用来替换无法辨别的字符，U+FFFD
 // Replacement char
 #define RC "\xEF\xBF\xBD"
 
+// DOC:
+// 创建规范化器规格实例，使用 NFKC 形式的 Unicode 规范化
 NormalizerSpec MakeDefaultSpec() {
   return SentencePieceTrainer::GetNormalizerSpec("nmt_nfkc");
 }
 }  // namespace
 
+// DOC:
+// 进行规范化器测试
 TEST(NormalizerTest, NormalizeTest) {
   auto spec = MakeDefaultSpec();
   const Normalizer normalizer(spec);
 
+  // DOC:
+  // 测试由空格构成的字符串与空字符串的等价性
   // Empty strings.
   EXPECT_EQ("", normalizer.Normalize(""));
   EXPECT_EQ("", normalizer.Normalize("      "));
   EXPECT_EQ("", normalizer.Normalize("　"));
 
+  // DOC:
+  // 测试字符串行尾存在冗余空格的等价性
   // Sentence with heading/tailing/redundant spaces.
   EXPECT_EQ(WS "ABC", normalizer.Normalize("ABC"));
   EXPECT_EQ(WS "ABC", normalizer.Normalize(" ABC "));
@@ -52,18 +64,28 @@ TEST(NormalizerTest, NormalizeTest) {
   EXPECT_EQ(WS "ABC", normalizer.Normalize("　　ABC"));
   EXPECT_EQ(WS "ABC", normalizer.Normalize("　　ABC　　"));
 
+  // DOC:
+  // 测试 NFKC 形式字符串的逐字规范化的 Unicode 标准等价性，①②③ 规范化为 123
   // NFKC char to char normalization.
   EXPECT_EQ(WS "123", normalizer.Normalize("①②③"));
 
+  // DOC:
+  // 测试 NFKC 形式字符串的多字节规范化的 Unicode 兼容等价性，Unicode 合字 ㍿ 规范化为 株式会社
   // NFKC char to multi-char normalization.
   EXPECT_EQ(WS "株式会社", normalizer.Normalize("㍿"));
 
+  // DOC:
+  // 测试半角片假名的规范化，半角浊化符号规范化时发生字符合成
   // Half width katakana, character composition happens.
   EXPECT_EQ(WS "グーグル", normalizer.Normalize(" ｸﾞｰｸﾞﾙ "));
 
+  // DOC:
+  // 测试英文文本的规范化
   EXPECT_EQ(WS "I" WS "saw" WS "a" WS "girl",
             normalizer.Normalize(" I  saw a　 　girl　　"));
 
+  // DOC:
+  // 将 Unicode 中的控制字符规范化为空字符串
   // Remove control chars.
   EXPECT_EQ("", normalizer.Normalize(string_util::UnicodeCharToUTF8(0x7F)));
   EXPECT_EQ("", normalizer.Normalize(string_util::UnicodeCharToUTF8(0x8F)));
@@ -74,6 +96,8 @@ TEST(NormalizerTest, NormalizeTest) {
   }
 }
 
+// DOC:
+// 同上；启用 set_add_dummy_prefix，前缀添加特殊 WS 符
 TEST(NormalizerTest, NormalizeWithoutDummyPrefixTest) {
   auto spec = MakeDefaultSpec();
   spec.set_add_dummy_prefix(false);
@@ -94,6 +118,8 @@ TEST(NormalizerTest, NormalizeWithoutDummyPrefixTest) {
   EXPECT_EQ("ABC", normalizer.Normalize("　　ABC　　"));
 }
 
+// DOC:
+// 同上；启用 set_treat_whitespace_as_suffix，分词时将单词空格视为后缀
 TEST(NormalizerTest, NormalizeTreatWSAsSuffixTest) {
   auto spec = MakeDefaultSpec();
   TrainerSpec trainer_spec;
@@ -110,6 +136,8 @@ TEST(NormalizerTest, NormalizeTreatWSAsSuffixTest) {
   EXPECT_EQ("ABC" WS, normalizer.Normalize("   ABC   "));
 }
 
+// DOC:
+// 同上；规范化时不移除额外的字符串中空格
 TEST(NormalizerTest, NormalizeWithoutRemoveExtraWhitespacesTest) {
   auto spec = MakeDefaultSpec();
   spec.set_remove_extra_whitespaces(false);
@@ -127,6 +155,8 @@ TEST(NormalizerTest, NormalizeWithoutRemoveExtraWhitespacesTest) {
             normalizer.Normalize("  A  B  C  "));
 }
 
+// DOC:
+// 同上；规范化时规格不设置转义字符
 TEST(NormalizerTest, NormalizeWithoutEscapeWhitespacesTest) {
   auto spec = MakeDefaultSpec();
   spec.set_add_dummy_prefix(false);
@@ -146,9 +176,16 @@ TEST(NormalizerTest, NormalizeWithoutEscapeWhitespacesTest) {
   EXPECT_EQ("A B C", normalizer.Normalize("A　 B　 C"));
 }
 
+// DOC:
+// 规范化规格包含空格字符
 TEST(NormalizeTest, NomalizeWithSpaceContainedRules) {
   Builder::CharsMap charsmap;
 
+  // DOC:
+  // 建立 lambda 函数添加规范化规格规则
+  // 参数:
+  //        src -- 源字符串
+  //        trg -- 目标字符串
   auto AddRule = [&](const std::string &src, const std::string &trg) {
     Builder::Chars src_chars, trg_chars;
     for (const char32 c : string_util::UTF8ToUnicodeText(src)) {
@@ -170,6 +207,8 @@ TEST(NormalizeTest, NomalizeWithSpaceContainedRules) {
   EXPECT_OK(
       Builder::CompileCharsMap(charsmap, spec.mutable_precompiled_charsmap()));
 
+  // DOC:
+  // 添加规格规则后测试默认行为
   // Test default behavior
   {
     const Normalizer normalizer(spec);
@@ -234,6 +273,8 @@ TEST(NormalizeTest, NomalizeWithSpaceContainedRules) {
     EXPECT_EQ("  A F G B", normalizer.Normalize("adb"));
   }
 
+  // DOC:
+  // 添加部分与空格匹配有关的边界案例
   // Added several corner cases around spaces.
   struct SpacePattern {
     bool add_dummy_prefix;
@@ -262,6 +303,8 @@ TEST(NormalizeTest, NomalizeWithSpaceContainedRules) {
   }
 }
 
+// DOC:
+// 同上；规范化测试包括与此前替换字符有关的案例
 TEST(NormalizerTest, NormalizeReplacementChar) {
   auto spec = MakeDefaultSpec();
   spec.set_add_dummy_prefix(false);
@@ -273,6 +316,8 @@ TEST(NormalizerTest, NormalizeReplacementChar) {
   EXPECT_EQ("ab" RC RC "xy", normalizer.Normalize("ab\xc0\x82xy"));
 }
 
+// DOC:
+// 完整的规范化测试
 TEST(NormalizerTest, NormalizeFullTest) {
   std::vector<size_t> n2i;
   std::string output;
@@ -355,6 +400,8 @@ TEST(NormalizerTest, NormalizeFullTest) {
   }
 }
 
+// DOC:
+// 同上；使用指定规则的预编译字符对应表进行规范化测试
 TEST(NormalizerTest, EncodeDecodePrecompiledCharsMapTest) {
   const std::string blob = Normalizer::EncodePrecompiledCharsMap("foo", "bar");
   absl::string_view trie_blob, normalized_blob;
@@ -367,6 +414,8 @@ TEST(NormalizerTest, EncodeDecodePrecompiledCharsMapTest) {
       Normalizer::DecodePrecompiledCharsMap("", &trie_blob, &normalized_blob));
 }
 
+// DOC:
+// 进行规范化状态测试
 TEST(NormalizerTest, StatusTest) {
   NormalizerSpec spec;
   {
@@ -387,6 +436,8 @@ TEST(NormalizerTest, StatusTest) {
   }
 }
 
+// DOC:
+// 规范化的前缀匹配测试
 TEST(NormalizerTest, PrefixMatcherTest) {
   const PrefixMatcher matcher({"abc", "ab", "xy", "京都"});
   bool found;
@@ -410,6 +461,8 @@ TEST(NormalizerTest, PrefixMatcherTest) {
   EXPECT_EQ("--de-pqr", matcher.GlobalReplace("xyabcdeabpqr", "-"));
 }
 
+// DOC:
+// 规范化的前缀匹配测试，匹配规则为空
 TEST(NormalizerTest, PrefixMatcherWithEmptyTest) {
   const PrefixMatcher matcher({});
   bool found;
