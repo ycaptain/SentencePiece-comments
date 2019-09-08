@@ -15,9 +15,20 @@
 #include "util.h"
 #include <iostream>
 
+// DOC: 命名空间 sentencepiece::string_util
 namespace sentencepiece {
 namespace string_util {
 
+// DOC:
+// 内置文本分割模板函数
+// 将以 delim 分隔的 str 切分为 vector 数组返回
+// 
+// 参数:
+//      str -- 原始文本
+//      delim -- 分隔符
+//      allow_empty -- 切分后元素是否可空
+// 返回:
+//      切分后的 vector 数组
 template <typename T>
 std::vector<T> SplitInternal(const T &str, const T &delim, bool allow_empty) {
   std::vector<T> result;
@@ -30,23 +41,53 @@ std::vector<T> SplitInternal(const T &str, const T &delim, bool allow_empty) {
     }
     current_pos = found_pos + 1;
   }
+  // 末尾项的处理
   if (str.size() > current_pos) {
     result.push_back(str.substr(current_pos, str.size() - current_pos));
   }
   return result;
 }
 
+// DOC:
+// 针对 std::string 类型的文本分割函数
+// 标准库字符串文本分割函数接口，调用 SplitInternal 实现
+// 
+// 参数:
+//      str -- 原始文本
+//      delim -- 分隔符
+//      allow_empty -- 切分后元素是否可空
+// 返回:
+//      切分后的 vector 数组
 std::vector<std::string> Split(const std::string &str, const std::string &delim,
                                bool allow_empty) {
   return SplitInternal<std::string>(str, delim, allow_empty);
 }
 
+// DOC:
+// 针对 absl::string_view 类型的文本分割函数
+// 语料文本分割函数接口，调用 SplitInternal 实现
+// 
+// 参数:
+//      str -- 原始文本
+//      delim -- 分隔符
+//      allow_empty -- 切分后元素是否可空
+// 返回:
+//      切分后的 vector 数组
 std::vector<absl::string_view> SplitPiece(absl::string_view str,
                                           absl::string_view delim,
                                           bool allow_empty) {
   return SplitInternal<absl::string_view>(str, delim, allow_empty);
 }
 
+// DOC:
+// 针对 std::string 实现的文本合并函数
+// 将传入的子文本数组以 delim 作为分隔符合并为一个字符串
+// 
+// 参数:
+//      tokens -- 子文本数组
+//      delim -- 分隔符
+// 返回:
+//      合并后的 std::string 类型字符串
 std::string Join(const std::vector<std::string> &tokens,
                  absl::string_view delim) {
   std::string result;
@@ -60,6 +101,15 @@ std::string Join(const std::vector<std::string> &tokens,
   return result;
 }
 
+// DOC:
+// 针对 int 实现的文本合并函数
+// 将传入的 int 整形数组以 delim 作为分隔符合并为一个字符串
+// 
+// 参数:
+//      tokens -- 整形数组
+//      delim -- 分隔符
+// 返回:
+//      合并后的 std::string 类型字符串
 std::string Join(const std::vector<int> &tokens, absl::string_view delim) {
   std::string result;
   char buf[32];
@@ -75,6 +125,17 @@ std::string Join(const std::vector<int> &tokens, absl::string_view delim) {
   return result;
 }
 
+// DOC:
+// 针对 absl::string_view 实现的子文本替换函数
+// 调用内部方法 StringReplace 实现的带返回值版本
+// 
+// 参数:
+//      s -- 原始文本
+//      oldsub -- 待替换子串
+//      newsub -- 用作替换的子串
+//      replace_all -- 是否替换所有子串
+// 返回:
+//      替换后的 std::string 类型字符串
 std::string StringReplace(absl::string_view s, absl::string_view oldsub,
                           absl::string_view newsub, bool replace_all) {
   std::string ret;
@@ -82,6 +143,16 @@ std::string StringReplace(absl::string_view s, absl::string_view oldsub,
   return ret;
 }
 
+// DOC:
+// 针对 absl::string_view 实现的子文本替换函数
+// 将原始文本 s 中的 oldsub 子串替换为 newsub 子串
+// 
+// 参数:
+//      s -- 原始文本
+//      oldsub -- 待替换子串
+//      newsub -- 用作替换的子串
+//      replace_all -- 是否替换所有子串
+//      res -- 保存替换后字符串的指针
 void StringReplace(absl::string_view s, absl::string_view oldsub,
                    absl::string_view newsub, bool replace_all,
                    std::string *res) {
@@ -103,6 +174,15 @@ void StringReplace(absl::string_view s, absl::string_view oldsub,
   res->append(s.data() + start_pos, s.size() - start_pos);
 }
 
+// DOC:
+// UTF-8 字符解码函数
+// 
+// 参数:
+//      begin -- UTF-8 字符起始位置指针
+//      end -- UTF-8 字符终止位置指针
+//      mblen -- 保存解码后所使用的字节数变量的指针
+// 返回:
+//      一个 char32 字符，即 UTF-8 解码的结果
 // mblen sotres the number of bytes consumed after decoding.
 char32 DecodeUTF8(const char *begin, const char *end, size_t *mblen) {
   const size_t len = end - begin;
@@ -139,6 +219,13 @@ char32 DecodeUTF8(const char *begin, const char *end, size_t *mblen) {
   return kUnicodeError;
 }
 
+// DOC:
+// 逐个字符地检测给定文本是否符合 UTF-8 规范
+// 
+// 参数:
+//      str -- 待检测的文本
+// 返回:
+//      一个 bool 类型值，表示给定的文本是否符合 UTF-8 规范
 bool IsStructurallyValid(absl::string_view str) {
   const char *begin = str.data();
   const char *end = str.data() + str.size();
@@ -152,6 +239,14 @@ bool IsStructurallyValid(absl::string_view str) {
   return true;
 }
 
+// DOC:
+// 将字符编码为 UTF-8
+// 
+// 参数:
+//      c -- 待编码字符
+//      output -- 保存编码结果的字符串指针
+// 返回:
+//      一个 ULL 类型值，表示编码 UTF-8 字符后所占的字节数
 size_t EncodeUTF8(char32 c, char *output) {
   if (c <= 0x7F) {
     *output = static_cast<char>(c);
@@ -189,8 +284,22 @@ size_t EncodeUTF8(char32 c, char *output) {
   return 4;
 }
 
+// DOC:
+// 将 Unicode 字符编码为 UTF-8 (调用 UnicodeTextToUTF8 实现)
+// 
+// 参数:
+//      c -- 待编码 Unicode 字符
+// 返回:
+//      一个 std::string 类型，包含编码后的 UTF-8 数据
 std::string UnicodeCharToUTF8(const char32 c) { return UnicodeTextToUTF8({c}); }
 
+// DOC:
+// 将 UTF-8 文本编码为 Unicode 文本
+// 
+// 参数:
+//      utf8 -- 待编码的 UTF-8 文本
+// 返回:
+//      一个 UnicodeText 类型，包含编码后的 Unicode 数据
 UnicodeText UTF8ToUnicodeText(absl::string_view utf8) {
   UnicodeText uc;
   const char *begin = utf8.data();
@@ -204,6 +313,13 @@ UnicodeText UTF8ToUnicodeText(absl::string_view utf8) {
   return uc;
 }
 
+// DOC:
+// 将 Unicode 文本编码为 UTF-8 文本
+// 
+// 参数:
+//      utext -- 待编码的 Unicode 文本
+// 返回:
+//      一个 std::string 类型，包含编码后的 UTF-8 数据
 std::string UnicodeTextToUTF8(const UnicodeText &utext) {
   char buf[8];
   std::string result;
@@ -215,9 +331,19 @@ std::string UnicodeTextToUTF8(const UnicodeText &utext) {
 }
 }  // namespace string_util
 
+// DOC: 命名空间 sentencepiece::random
+// DOC:
+// 将 Unicode 文本编码为 UTF-8 文本
+// 
+// 参数:
+//      utext -- 待编码的 Unicode 文本
+// 返回:
+//      一个 std::string 类型，包含编码后的 UTF-8 数据
 namespace random {
 #ifdef SPM_NO_THREADLOCAL
 namespace {
+// DOC:
+// 针对不具备 thread_local 特性编译器实现的线程周期存储类型
 class RandomGeneratorStorage {
  public:
   RandomGeneratorStorage() {
@@ -245,6 +371,11 @@ std::mt19937 *GetRandomGenerator() {
   return storage->Get();
 }
 #else
+// DOC:
+// 随机数发生器
+// 
+// 返回:
+//      一个具有线程生存周期的 std::mt19937 随机数发生器
 std::mt19937 *GetRandomGenerator() {
   thread_local static std::mt19937 mt(std::random_device{}());
   return &mt;
@@ -252,8 +383,16 @@ std::mt19937 *GetRandomGenerator() {
 #endif
 }  // namespace random
 
+// DOC: 命名空间 sentencepiece::util
 namespace util {
 
+// DOC:
+// 将错误编码处理为提示信息文本并返回
+// 
+// 参数:
+//      errnum -- 错误编码
+// 返回:
+//      包含错误编码的提示信息文本
 std::string StrError(int errnum) {
   constexpr int kStrErrorSize = 1024;
   char buffer[kStrErrorSize];
@@ -273,8 +412,18 @@ std::string StrError(int errnum) {
 }
 }  // namespace util
 
+// DOC:
+// 对于 Win32 系统，额外实现基于 Win32 API 的宽字节和 UTF-8 编码之间的转换
 #ifdef OS_WIN
+// DOC: 命名空间 sentencepiece::win32
 namespace win32 {
+// DOC:
+// 将 UTF-8 编码文本转换为宽字节编码文本
+// 
+// 参数:
+//      input -- 待转换的 UTF-8 编码文本
+// 返回:
+//      一个 std::wstring 类型的宽字节编码文本
 std::wstring Utf8ToWide(const std::string &input) {
   int output_length =
       ::MultiByteToWideChar(CP_UTF8, 0, input.c_str(), -1, nullptr, 0);
@@ -292,6 +441,13 @@ std::wstring Utf8ToWide(const std::string &input) {
   return output;
 }
 
+// DOC:
+// 将宽字节编码文本转换为 UTF-8 编码文本
+// 
+// 参数:
+//      input -- 待转换的宽字节编码文本
+// 返回:
+//      一个 std::string 类型的 UTF-8 编码文本
 std::string WideToUtf8(const std::wstring &input) {
   const int output_length = ::WideCharToMultiByte(CP_UTF8, 0, input.c_str(), -1,
                                                   nullptr, 0, nullptr, nullptr);

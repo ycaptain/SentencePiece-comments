@@ -9,6 +9,7 @@ Makefile.in
 /cmake-build-debug
 .idea
 .czrc
+.vs
 
 /autom4te.cache
 /autoscan.log
