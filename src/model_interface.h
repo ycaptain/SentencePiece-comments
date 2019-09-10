@@ -32,6 +32,9 @@
 
 namespace sentencepiece {
 
+// 将给定的文本按词分割。
+// 参数：
+//       add_ws_as_suffix -- 是否将空格视为后缀，否则视为前缀。
 // "_this_is_a_pen" => ["_this", "_is", "_a", "_pen"]
 std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
                                               bool add_ws_as_suffix = false);
@@ -41,6 +44,7 @@ using NBestEncodeResult = std::vector<std::pair<EncodeResult, float>>;
 
 class ModelProto;
 
+// 
 // Underlying model interface.
 // Given a normalized string, returns a sequence of sentence pieces with ids.
 class ModelInterface {

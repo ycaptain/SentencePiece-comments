@@ -30,6 +30,7 @@
 
 namespace sentencepiece {
 
+// 对键值对向量按照值从大到小排序。
 template <typename K, typename V>
 std::vector<std::pair<K, V>> Sorted(const std::vector<std::pair<K, V>> &m) {
   std::vector<std::pair<K, V>> v = m;
@@ -47,6 +48,7 @@ std::vector<std::pair<K, V>> Sorted(const std::unordered_map<K, V> &m) {
   return Sorted(v);
 }
 
+// 训练器基类。
 // Base trainer class
 class TrainerInterface {
  public:

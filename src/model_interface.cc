@@ -127,7 +127,7 @@ std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
     while (begin < end) {
       const int mblen =
           std::min<int>(string_util::OneCharLen(begin), end - begin);
-      if (begin == text.data() ||
+      if (begin == text.data() || // 在文本开始处
           absl::string_view(begin, mblen) == kSpaceSymbol)
         result.emplace_back(begin, 0);  // add empty string piece.
       result.back() =

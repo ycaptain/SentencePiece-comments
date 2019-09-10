@@ -25,35 +25,42 @@ class NormalizerSpec;
 
 class SentencePieceTrainer {
  public:
+  // 用默认的Normalizer训练模型。
   // Trains SentencePiece model with `trainer_spec`.
   // Default `normalizer_spec` is used.
   static util::Status Train(const TrainerSpec &trainer_spec);
 
+  // 用指定的Normalizer训练模型。
   // Trains SentencePiece model with `trainer_spec` and
   // `normalizer_spec`.
   static util::Status Train(const TrainerSpec &trainer_spec,
                             const NormalizerSpec &normalizer_spec);
 
+  // 传入参数训练模型。
   // Trains SentencePiece model with command-line string in `args`,
   // e.g.,
   // '--input=data --model_prefix=m --vocab_size=8192 model_type=unigram'
   static util::Status Train(util::min_string_view args);
 
+  // 从预编译的Normalizer名称创建一个Normalizer对象。
   // Handy function to make a normalizer spec from the pre-compiled
   // normalization name. Do not use this method in production as it crashes
   // when `name` is invalid. Useful for unittesting.
   static NormalizerSpec GetNormalizerSpec(util::min_string_view name);
-
+  
+  // 从名称或normalization_rule_tsv为normalizer_spec输入必要的字段数据。
   // Populates necessary fields (precompiled_charmap) from
   // `NormalizerSpec::name` or `NormalizerSpec::normalization_rule_tsv`.
   static util::Status PopulateNormalizerSpec(NormalizerSpec *normalizer_spec);
 
+  // 根据参数重新创建TrainerSpec和NormalizerSpec。
   // Overrides `trainer_spec` and `normalizer_spec` with the
   // command-line string in `args`.
   static util::Status MergeSpecsFromArgs(util::min_string_view args,
                                          TrainerSpec *trainer_spec,
                                          NormalizerSpec *normalizer_spec);
 
+  // 设置Protobuf中的字段值。
   // Helper function to set `field_name=value` in `message`.
   // When `field_name` is repeated, multiple values can be passed
   // with comma-separated values. `field_name` must not be a nested message.
@@ -63,6 +70,7 @@ class SentencePieceTrainer {
                                     const std::string &value,
                                     TrainerSpec *message);
 
+  // 设置Protobuf中的字段值。
   static util::Status SetProtoField(const std::string &name,
                                     const std::string &value,
                                     NormalizerSpec *message);

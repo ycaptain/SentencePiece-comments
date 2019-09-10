@@ -23,6 +23,7 @@ namespace sentencepiece {
 
 class ModelFactory {
  public:
+  // 创建ModelInterface实例。
   // Creates Model instance from |model_proto|.
   static std::unique_ptr<ModelInterface> Create(const ModelProto &model_proto);
 };

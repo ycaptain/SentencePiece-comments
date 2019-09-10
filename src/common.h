@@ -193,6 +193,7 @@ inline const char *BaseName(const char *path) {
     CHECK(!_status.ok()) << _status.ToString(); \
   } while (0)
 
+// 如果状态异常则返回异常信息。
 #define RETURN_IF_ERROR(expr)          \
   do {                                 \
     const auto _status = expr;         \
