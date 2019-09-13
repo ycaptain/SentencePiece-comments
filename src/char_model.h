@@ -21,7 +21,7 @@
 namespace sentencepiece {
 namespace character {
 
-// Tokenize text into character sequence
+// 将文本标记为字符序列
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);

@@ -21,7 +21,7 @@
 namespace sentencepiece {
 namespace character {
 
-// Trainer class for character model.
+// 字符模型所用训练器（类）
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,

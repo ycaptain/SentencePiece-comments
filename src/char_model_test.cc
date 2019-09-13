@@ -26,6 +26,7 @@ namespace character {
 namespace {
 
 // Space symbol (U+2581)
+// 空格
 #define WS "\xe2\x96\x81"
 
 ModelProto MakeBaseModelProto() {
@@ -44,6 +45,7 @@ ModelProto MakeBaseModelProto() {
   return model_proto;
 }
 
+// 增加文本块
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -52,8 +54,10 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
 }
 
 TEST(ModelTest, EncodeTest) {
+// 创建基本模型
   ModelProto model_proto = MakeBaseModelProto();
 
+// 增加文本块 " abcABC"
   AddPiece(&model_proto, WS, 0.0);
   AddPiece(&model_proto, "a", 0.1);
   AddPiece(&model_proto, "b", 0.2);
@@ -70,6 +74,7 @@ TEST(ModelTest, EncodeTest) {
   result = model.Encode("");
   EXPECT_TRUE(result.empty());
 
+  // 编码测试 " a b c"
   result = model.Encode(WS "a" WS "b" WS "c");
   EXPECT_EQ(6, result.size());
   EXPECT_EQ(WS, result[0].first);
@@ -79,6 +84,7 @@ TEST(ModelTest, EncodeTest) {
   EXPECT_EQ(WS, result[4].first);
   EXPECT_EQ("c", result[5].first);
 
+  // 编码测试 " ab cd abc"
   result = model.Encode(WS "ab" WS "cd" WS "abc");
   EXPECT_EQ(10, result.size());
   EXPECT_EQ(WS, result[0].first);
@@ -92,13 +98,14 @@ TEST(ModelTest, EncodeTest) {
   EXPECT_EQ("b", result[8].first);
   EXPECT_EQ("c", result[9].first);
 
-  // makes a broken utf-8
+  // 使用一个损坏的utf-8编码字符 "あ" 进行测试
   const std::string broken_utf8 = std::string("あ").substr(0, 1);
   result = model.Encode(broken_utf8);
   EXPECT_EQ(1, result.size());
   EXPECT_EQ(broken_utf8, result[0].first);
 
-  // "ABC" is treated as one piece, as it is USER_DEFINED.
+  // "ABC" 被当作一个词划分，与用户定义相同
+  // 编码测试 " abABCcd"
   result = model.Encode(WS "abABCcd");
   EXPECT_EQ(6, result.size());
   EXPECT_EQ(WS, result[0].first);

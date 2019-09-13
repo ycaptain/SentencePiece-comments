@@ -25,6 +25,7 @@ namespace character {
 namespace {
 
 // Space symbol (U+2581)
+// ¿Õ¸ñ
 #define WS "\xE2\x96\x81"
 
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
@@ -57,7 +58,7 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
   const auto &model = processor.model_proto();
   std::vector<std::string> pieces;
 
-  // remove <unk>, <s>, </s>
+  // ÒÆ³ý <unk>, <s>, </s>
   for (int i = 3; i < model.pieces_size(); ++i) {
     pieces.emplace_back(model.pieces(i).piece());
   }
