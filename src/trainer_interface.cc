@@ -33,9 +33,11 @@
 
 namespace sentencepiece {
 
+// 空格(unicode)
 const char32 TrainerInterface::kWSChar = L'\u2581';
 const char TrainerInterface::kWSStr[] = "\xe2\x96\x81";
 
+// 未知字符(unicode)
 const char32 TrainerInterface::kUNKChar = L'\u2585';
 const char TrainerInterface::kUNKStr[] = "\xe2\x96\x85";
 
@@ -43,6 +45,7 @@ const char32 TrainerInterface::kUPPBoundaryChar = L'\u0009';
 const char TrainerInterface::kUPPBoundaryStr[] = "\t";
 
 namespace {
+// 核实描述是否有效。
 util::Status VerifySpec(const TrainerSpec &trainer_spec) {
   CHECK_OR_RETURN(!trainer_spec.model_prefix().empty());
   CHECK_GT_OR_RETURN(trainer_spec.input().size(), 0);
