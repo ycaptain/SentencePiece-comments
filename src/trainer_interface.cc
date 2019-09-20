@@ -183,13 +183,13 @@ bool TrainerInterface::IsValidSentencePiece(
 
   for (size_t pos = 0; pos < sentencepiece.size(); ++pos) {
     const char32 c = sentencepiece[pos];
-    if (c == kUNKChar) {  // UNK must not be included
+    if (c == kUNKChar) {  // UNK must not be included // 未知字不能被合法的piece包含
       return false;
     }
-    if (c == 0x0000) {  // NULL is not allowed for Darts (TRIE).
+    if (c == 0x0000) {  // NULL is not allowed for Darts (TRIE). // NULL不被允许出现在piece中
       return false;
     }
-    // kUPPBoundaryChar is included when split_by_upp_for_training is true.
+    // kUPPBoundaryChar is included when split_by_upp_for_training is true. // 当设置split_by_upp_for_training为true时边缘字可以被合法的piece包含
     if (c == kUPPBoundaryChar) {
       return false;
     }
@@ -202,6 +202,9 @@ bool TrainerInterface::IsValidSentencePiece(
     }
 
     if (c == kWSChar) {
+	  // 只能允许空格出现在词的前缀位置。
+	  // 当split_by_whitespace设置为false时，允许空格出现在中间位置，但不允许出现在末尾。
+	  // 无论split_by_whitespace如何设置，空格都被当做一个符号前缀/中缀或者一个独立的符号。
       // Only allows whitespace to appear as a prefix of piece.
       // When split_by_whitespace is false, we allow whitespaces to
       // appear in the middle, "foo_bar", but do not allow them
@@ -226,6 +229,7 @@ bool TrainerInterface::IsValidSentencePiece(
     } else {
       auto s = unicode_script::GetScript(c);
 
+	  // 将Hiragana/Katakana与汉字合并。
       // Merge Hiragana/Katakana into Han.
       if (s == unicode_script::U_Hiragana || s == unicode_script::U_Katakana ||
           c == 0x30FC) {  // long vowel sound (Katakana) should be Katakana
@@ -325,6 +329,7 @@ END:
   if (self_test_samples_.size() > 0)
     LOG(INFO) << "Loaded " << self_test_samples_.size() << " test sentences";
 
+  // 规范化并移除空字符串。
   // Normalize and removes empty string.
   {
     const normalizer::Normalizer normalizer(normalizer_spec_);
@@ -362,6 +367,7 @@ END:
     }
   }
 
+  // 记字符出现的频数。
   // Count character frequencies.
   int64 all_chars_count = 0;
   std::unordered_map<char32, int64> chars_count;
