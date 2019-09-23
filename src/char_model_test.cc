@@ -21,14 +21,22 @@
 #include "testharness.h"
 #include "util.h"
 
+// 命名空间 sentencepiece
 namespace sentencepiece {
+// 命名空间 character
 namespace character {
+// 无名命名空间 仅限于本文件内
 namespace {
 
 // Space symbol (U+2581)
-// 空格
+// DOC: 空格宏定义
 #define WS "\xe2\x96\x81"
 
+// DOC:
+// 创建基本模型原型函数
+//
+// 返回:
+//		创建好的基本模型原型
 ModelProto MakeBaseModelProto() {
   ModelProto model_proto;
   auto *sp1 = model_proto.add_pieces();
@@ -45,7 +53,13 @@ ModelProto MakeBaseModelProto() {
   return model_proto;
 }
 
-// 增加文本块
+// DOC:
+// 为模型原型增加文本块 (Piece) 函数
+//
+// 参数:
+//		model_proto -- 目标模型原型指针
+//		piece -- 增加的文本块 (piece)
+//		score -- 模型分数（参考BLEU SCORE），默认值为0.0
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -54,10 +68,9 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
 }
 
 TEST(ModelTest, EncodeTest) {
-// 创建基本模型
   ModelProto model_proto = MakeBaseModelProto();
 
-// 增加文本块 " abcABC"
+// DOC: 向模型原型增加文本块 " abcABC"
   AddPiece(&model_proto, WS, 0.0);
   AddPiece(&model_proto, "a", 0.1);
   AddPiece(&model_proto, "b", 0.2);
@@ -74,7 +87,7 @@ TEST(ModelTest, EncodeTest) {
   result = model.Encode("");
   EXPECT_TRUE(result.empty());
 
-  // 编码测试 " a b c"
+ // DOC: 测试 " a b c" 编码结果是否与测试文本相同，不同则触发异常
   result = model.Encode(WS "a" WS "b" WS "c");
   EXPECT_EQ(6, result.size());
   EXPECT_EQ(WS, result[0].first);
@@ -84,7 +97,7 @@ TEST(ModelTest, EncodeTest) {
   EXPECT_EQ(WS, result[4].first);
   EXPECT_EQ("c", result[5].first);
 
-  // 编码测试 " ab cd abc"
+ // DOC: 测试 " ab cd abc" 编码结果是否与测试文本相同，不同则触发异常
   result = model.Encode(WS "ab" WS "cd" WS "abc");
   EXPECT_EQ(10, result.size());
   EXPECT_EQ(WS, result[0].first);
@@ -98,14 +111,17 @@ TEST(ModelTest, EncodeTest) {
   EXPECT_EQ("b", result[8].first);
   EXPECT_EQ("c", result[9].first);
 
-  // 使用一个损坏的utf-8编码字符 "あ" 进行测试
+  // makes a broken utf-8
+ // DOC: 使用一个损坏的utf-8编码字符 "あ" 进行测试编码是否正确，不正确则触发异常
   const std::string broken_utf8 = std::string("あ").substr(0, 1);
   result = model.Encode(broken_utf8);
   EXPECT_EQ(1, result.size());
   EXPECT_EQ(broken_utf8, result[0].first);
 
-  // "ABC" 被当作一个词划分，与用户定义相同
-  // 编码测试 " abABCcd"
+  // "ABC" is treated as one piece, as it is USER_DEFINED.
+// DOC: "ABC" 被当作一个词划分，与用户定义相同
+
+// DOC: 测试 " abABCcd" 编码结果是否与测试文本相同，不同则触发异常
   result = model.Encode(WS "abABCcd");
   EXPECT_EQ(6, result.size());
   EXPECT_EQ(WS, result[0].first);
@@ -116,7 +132,9 @@ TEST(ModelTest, EncodeTest) {
   EXPECT_EQ("d", result[5].first);
 }
 
+
 TEST(CharModelTest, NotSupportedTest) {
+// DOC: 测试编码结果和NBest编码结果是否正确，不正确则触发异常
   ModelProto model_proto = MakeBaseModelProto();
   const Model model(model_proto);
   EXPECT_EQ(NBestEncodeResult(), model.NBestEncode("test", 10));

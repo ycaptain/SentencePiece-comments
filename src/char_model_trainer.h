@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+ï»¿// Copyright 2016 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@
 #include "sentencepiece_model.pb.h"
 #include "trainer_interface.h"
 
+// å‘½åç©ºé—´ sentencepiece
 namespace sentencepiece {
+// å‘½åç©ºé—´ character
 namespace character {
 
-// ×Ö·ûÄ£ĞÍËùÓÃÑµÁ·Æ÷£¨Àà£©
+  // Trainer class for character model.
+// DOC: 
+// å­—ç¬¦ (char) æ¨¡å‹è®­ç»ƒå™¨ ç±»
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,

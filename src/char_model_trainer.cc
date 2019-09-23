@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+﻿// Copyright 2016 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,15 @@
 #include "char_model.h"
 #include "util.h"
 
+// 命名空间 sentencepiece
 namespace sentencepiece {
+// 命名空间 character
 namespace character {
 
+// DOC:
+// 对模型进行训练
+// 返回:
+//		训练后训练器状态
 util::Status Trainer::Train() {
   RETURN_IF_ERROR(status());
 

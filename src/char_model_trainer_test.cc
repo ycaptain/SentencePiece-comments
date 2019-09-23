@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+﻿// Copyright 2016 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,26 @@
 #include "testharness.h"
 #include "util.h"
 
+// 命名空间 sentencepiece
 namespace sentencepiece {
+// 命名空间 character
 namespace character {
+// 无名命名空间 仅限于本文件内
 namespace {
 
 // Space symbol (U+2581)
-// �ո�
-#define WS "\xE2\x96\x81"
+// DOC: 空格宏定义
+#define WS "\xe2\x96\x81"
 
+// DOC:
+// 启动训练器 函数
+//
+// 参数:
+//		input -- 输入文本
+//		size -- 词汇表大小
+//
+// 返回:
+//		将拆分得到的文本块以空格连接的文本结果
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
   test::ScopedTempFile input_scoped_file("input");
   test::ScopedTempFile model_scoped_file("model");
@@ -58,7 +70,8 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
   const auto &model = processor.model_proto();
   std::vector<std::string> pieces;
 
-  // �Ƴ� <unk>, <s>, </s>
+  // remove <unk>, <s>, </s>
+// DOC: 移除 <unk>, <s>, </s>
   for (int i = 3; i < model.pieces_size(); ++i) {
     pieces.emplace_back(model.pieces(i).piece());
   }
@@ -67,6 +80,7 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
 }
 
 TEST(TrainerTest, BasicTest) {
+// DOC: 测试文本 " a e p n I h l v" 与 训练后得到的文本块结果文本是否相同，不同则触发异常
   EXPECT_EQ(WS " a e p n I h l v",
             RunTrainer({"I have a pen", "I have an apple", "apple pen"}, 100));
   EXPECT_EQ(WS " a",  // <unk>, <s>, </s>, _, a

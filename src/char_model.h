@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+﻿// Copyright 2016 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,15 @@
 #include "model_interface.h"
 #include "sentencepiece_model.pb.h"
 
+// DOC: 命名空间 sentencepiece
 namespace sentencepiece {
+// DOC: 命名空间 character
 namespace character {
+  // Tokenize text into character sequence
 
-// ���ı����Ϊ�ַ�����
+// DOC:
+// Model 类，继承 ModelInterface 类
+// 将文本标记为字符序列
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);
