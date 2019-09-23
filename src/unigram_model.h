@@ -26,15 +26,38 @@
 #include "sentencepiece_model.pb.h"
 #include "third_party/darts_clone/darts.h"
 
+// DOC:命名空间 sentencepiece::unigram
+
 namespace sentencepiece {
 namespace unigram {
-
+// DOC:
+// Lattice类
+// 保存unigram处理后的所有分词片段
+//
 // Lattice represents a search space of sentence piece segmentation.
 class Lattice {
+// DOC:
+// 公共成员变量
  public:
+
+// DOC:
+// Lattice对象的构造和删除
   Lattice();
   virtual ~Lattice();
 
+// DOC:
+// 用于保存单个piece
+// 成员变量:
+//      piece -- 当前结点单词保存为string_view格式
+//      pos -- 当前结点保存单词的在句子中的位置
+//      length -- 当前结点保存以Unicode编码单词的长度 注意:不是utf8
+//      node_id -- 当前结点在当前lattice中的位置
+//      id -- 当前结点保存单词的ID 注意:以-1表示unkrown单词
+//      score -- 当前结点保存单词 其出现概率的对数值
+//      backtrace_score -- 在Viterbi算法中 当前结点的最佳路径 其对应的概率对数值
+//      prev -- 在Viterbi算法中 当前结点的最佳路径中 该结点的上层结点指针
+//      DebugString -- 未使用
+//
   struct Node {
     absl::string_view piece;  // Sentence piece representation.
     uint32 pos;               // Unicode position in the sentence.
@@ -48,51 +71,126 @@ class Lattice {
     std::string DebugString() const;
   };
 
+  // DOC:
+  // 返回起始符指针
   // Returns bos node.
   Node *bos_node() const;
 
+  // DOC:
+  // 返回终止符指针
   // Returns eos node.
   Node *eos_node() const;
 
+  // DOC:
+  // 返回begin_nodes_中在pos处开始的结点组
+  //
+  // 参数:
+  //    pos -- 表示开始位置的参数
   // Returns nodes starting at |pos|.
   const std::vector<Node *> &begin_nodes(int pos) const;
 
+  // DOC:
+  // 返回在pos处结束的结点组
+  //
+  // 参数:
+  //    pos -- 表示结束位置的参数
   // Returns nodes ending at |pos|.
   const std::vector<Node *> &end_nodes(int pos) const;
 
+  // DOC:
+  // 返回Unicode编码单词的长度
   // Returns Unicode character length.
   int size() const;
 
+  // DOC:
+  // 返回多字节字符(utf8)的长度
   // Returns multi-byte (utf8) length.
   int utf8_size() const;
 
+  // DOC:
+  // 返回当前句子从pos位至结尾的子串
+  // 相当于句子从pos为至结尾的切片
   // Returns the substring of sentence. sentence[pos:]
   const char *surface(int pos) const;
 
+  // DOC:
+  // 返回整个当前句子的头指针
+  // 相当于surface(0)
   // Returns immutable sentence. The same as surface(0)
   const char *sentence() const;
 
+  // DOC:
+  // 清除lattice
   // Clears the lattice.
   void Clear();
 
+  // DOC:
+  // 根据一个string_view类型的sentence 创建一个Lattice对象
   // Sets new sentence.
   void SetSentence(absl::string_view sentence);
 
+  // DOC:
+  // 将sentence[pos, pos + length - 1]子串 作为一个新的结点插入到lattice
+  //
+  // 参数:
+  //    pos -- 表示插入位置的参数
+  //    length -- 表示插入长度的参数
+  //
+  // 返回:
+  //    新插入结点的指针
+  //
+  // 注意:
+  // 在调用此方法之后 必须设置该结点的score与id参数
   // Inserts a new node at [pos, pos + length - 1].
   // After calling this method, The caller must set Node::score and Node::id.
   Node *Insert(int pos, int length);
 
+  // DOC:
+  // 预处理到达各位置的最佳路径及其概率对数值
+  //
+  // 注意:
+  // 所有结点都必须提前输入
+  //
+  // 返回:
+  // 到达各位置的最佳路径的遍历结点序
   // Returns Viterbi path. All nodes must be populated in advance.
   std::vector<Node *> Viterbi();
 
+  // DOC:
+  // 返回n个结点条件下的最佳路径的遍历结点序
+  //
+  // 参数:
+  //    size_t -- 预分配hypothesis_allocator的大小
+  //    nbest_size -- 表示nbest_size个结点的条件下
+  //
+  // 返回:
+  //    n个结点条件下的最佳路径的遍历结点序
   // Returns n-best results.
   std::vector<std::vector<Node *>> NBest(size_t nbest_size);
 
+  // DOC:
+  // 返回根据分词块的产生可能性 在lattice中选择的一条路径
+  //
+  // 参数:
+  //    theta -- 平滑参数
+  //
+  // 返回:
+  //    lattice中的一条产生路径
+  //
   // Samples one path from the lattice according to the
   // generation probability (Product of piece probabilities).
   // `theta` is a smoothing parameter.
   std::vector<Node *> Sample(float theta);
 
+  // DOC:
+  // 返回当前句子出现概率的对数值
+  //
+  // 参数:
+  //    freq -- 表示句子出现的频率
+  //    excepted -- 保存各单词出现概率对数值vector的指针 其下表为单词ID
+  //
+  // 返回:
+  //    当前句子出现概率的对数值
   // Populates marginal probability of every node in this lattice.
   // |freq| is the frequency of the sentence.
   //  for (auto *node : all_nodes_) {
@@ -101,11 +199,22 @@ class Lattice {
   // Returns the log-likelihood of this sentence.
   float PopulateMarginal(float freq, std::vector<float> *expected) const;
 
+  // DOC:
+  // 私有成员变量
  private:
+  // DOC:
+  // 返回新结点的指针
   // Returns new node.
   // Lattice class has the ownership of the returned value.
   Node *NewNode();
 
+  // DOC:
+  // 各私有成员变量：
+  // sentence_ -- 保存sentence
+  // surface_ -- 保存sentenced的全部切片
+  // begin_nodes_ -- 保存各位置开始的结点组
+  // end_nodes_ -- 保存各位置结束的结点组
+  // node_allocator_ -- 结点空间分配器 保存lattice中的全部结点
   absl::string_view sentence_;
   std::vector<const char *> surface_;
   std::vector<std::vector<Node *>> begin_nodes_;
@@ -113,6 +222,10 @@ class Lattice {
   model::FreeList<Node> node_allocator_;
 };
 
+// DOC:
+// Model类
+// 实现ModelInterface接口
+//
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);
