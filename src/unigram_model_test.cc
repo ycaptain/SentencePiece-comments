@@ -24,9 +24,12 @@
 #include "testharness.h"
 #include "util.h"
 
+// DOC:命名空间 sentencepiece::unigram
 namespace sentencepiece {
 namespace unigram {
 
+    // DOC:
+    //      对Lattice进行SetSentence的相关测试
 TEST(LatticeTest, SetSentenceTest) {
   Lattice lattice;
 
@@ -71,6 +74,8 @@ TEST(LatticeTest, SetSentenceTest) {
   EXPECT_EQ(0, lattice.utf8_size());
 }
 
+    // DOC:
+    //      对Lattice进行SetSentence的相关测试
 TEST(LatticeTest, InsertTest) {
   Lattice lattice;
   lattice.SetSentence("ABあい");

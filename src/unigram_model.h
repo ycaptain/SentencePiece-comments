@@ -53,8 +53,8 @@ class Lattice {
 //      length -- 当前结点保存以Unicode编码单词的长度 注意:不是utf8
 //      node_id -- 当前结点在当前lattice中的位置
 //      id -- 当前结点保存单词的ID 注意:以-1表示unkrown单词
-//      score -- 当前结点保存单词 其出现概率的对数值
-//      backtrace_score -- 在Viterbi算法中 当前结点的最佳路径 其对应的概率对数值
+//      score -- 当前结点保存单词的词频对数 即该词出现概率的对数值
+//      backtrace_score -- 在Viterbi算法中 自当前结点向前回溯的最大概率叠加值
 //      prev -- 在Viterbi算法中 当前结点的最佳路径中 该结点的上层结点指针
 //      DebugString -- 未使用
 //
@@ -98,12 +98,12 @@ class Lattice {
   const std::vector<Node *> &end_nodes(int pos) const;
 
   // DOC:
-  // 返回Unicode编码单词的长度
+  // 返回Unicode编码下的长度
   // Returns Unicode character length.
   int size() const;
 
   // DOC:
-  // 返回多字节字符(utf8)的长度
+  // 返回多字节字符编码下(utf8)的长度
   // Returns multi-byte (utf8) length.
   int utf8_size() const;
 
@@ -169,13 +169,13 @@ class Lattice {
   std::vector<std::vector<Node *>> NBest(size_t nbest_size);
 
   // DOC:
-  // 返回根据分词块的产生可能性 在lattice中选择的一条路径
+  // 返回根据分词块的产生可能性 在lattice中选择的一条组成路径
   //
   // 参数:
   //    theta -- 平滑参数
   //
   // 返回:
-  //    lattice中的一条产生路径
+  //    lattice中的一条组成路径
   //
   // Samples one path from the lattice according to the
   // generation probability (Product of piece probabilities).
@@ -232,31 +232,73 @@ class Model : public ModelInterface {
   Model() {}
   ~Model() override;
 
+    // DOC:
+    //      对字符串进行处理计算
+    // 参数:
+    //      normalized -- 已规范化的字符串
+    // 返回:
+    //      经过Viterbi算法处理过的最佳分词序列
   EncodeResult Encode(absl::string_view normalized) const override;
 
+    // DOC:
+    //      处理计算字符串nbest_size条件下的最佳匹配
+    // 参数:
+    //      normalized -- 已规范化的字符串
+    //      nbest_size -- 分词的个数限制
+    // 返回:
+    //      经过NBest算法处理过的最佳分词序列
   NBestEncodeResult NBestEncode(absl::string_view normalized,
                                 int nbest_size) const override;
 
+    // DOC:
+    //      根据平滑参数计算样本字符串的最佳匹配
+    // 参数:
+    //      normalized -- 已规范化的字符串
+    //      theta -- 平滑参数
+    // 返回:
+    //      样本字符串的最佳分词序列
   EncodeResult SampleEncode(absl::string_view normalized,
                             float theta) const override;
 
+  // DOC：
+  //    返回句子所有分词中的最小概率值
+  //    设定未登录词的score为min_score() - 10
   // Returns the minimum score in sentence pieces.
   // min_score() - 10 is used for the cost of unknown sentence.
   float min_score() const { return min_score_; }
 
+  // DOC:
+  //    返回句子所有分词中的最大概率值
+  //    用户自定义词的score为max_score()
   // Returns the maximum score in sentence pieces.
   // max_score() is used for the cost of user defined symbols.
   float max_score() const { return max_score_; }
 
+  // DOC:
+  //      预处理lattice
+  // 参数:
+  //      lattice -- 待处理的Lattice对象的指针
+  // 注意:
+  //      在调用该函数后 Viterbi()返回最佳分词片段
+  // 调用关系:
+  //      调用Viterbi()函数
   // Populates all sentence pieces to the |lattice|.
   // After calling this function, lattice.Viterbi() returns the
   // best segmentation.
   void PopulateNodes(Lattice *lattice) const;
 
+    // DOC:
+    //      将分词转换为ID
+    // 参数:
+    //      piece -- 分词的字符串形式
+    // 返回:
+    //      所查询分词在字典中的ID
   // Returns a vocab id of |piece|.
   int PieceToId(absl::string_view piece) const override;
 
  protected:
+  // DOC:
+  //    创建字典树
   // Builds a Trie index.
   void BuildTrie(std::vector<std::pair<absl::string_view, int>> *pieces);
 
@@ -264,6 +306,9 @@ class Model : public ModelInterface {
   float max_score_ = 0.0;
   std::unique_ptr<Darts::DoubleArray> trie_;
 
+  // DOC:
+  //    字典树results返回的最大值
+  //    取决于字典树中最大的共享前缀数
   // Maximum size of the return value of Trie, which corresponds
   // to the maximum size of shared common prefix in the sentence pieces.
   int trie_results_size_;
