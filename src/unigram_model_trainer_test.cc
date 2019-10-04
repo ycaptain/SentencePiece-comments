@@ -23,13 +23,17 @@
 
 DECLARE_string(data_dir);
 
+// DOC:命名空间 sentencepiece::unigram
 namespace sentencepiece {
 namespace unigram {
 namespace {
 
+// DOC:定义空格字符
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// DOC:
+//      对UnigramTrainer进行TrainerModel模型建立的相关测试
 TEST(UnigramTrainerTest, TrainerModelTest) {
   TrainerSpec trainer_spec;
   NormalizerSpec normalizer_spec;
@@ -37,6 +41,9 @@ TEST(UnigramTrainerTest, TrainerModelTest) {
   EXPECT_EQ(EncodeResult(), model.Encode("test"));
 }
 
+// DOC:
+//      对UnigramTrainer进行具体分词训练过程的测试
+//      比较训练所得结果是否符合预期
 TEST(UnigramTrainerTest, EndToEndTest) {
   const test::ScopedTempFile sf("tmp_model");
   const std::string input =
