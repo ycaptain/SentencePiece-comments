@@ -19,9 +19,12 @@
 
 namespace sentencepiece {
 namespace {
+// DOC: 定义 Unicode 编码上限值
 constexpr int kMaxUnicode = 0x10FFFF;
 }
 
+// DOC: 词法转换测试
+// 主要用于测试语料到布尔型、整形、小数型和文本型转换的功能
 TEST(UtilTest, LexicalCastTest) {
   bool b = false;
   EXPECT_TRUE(string_util::lexical_cast<bool>("true", &b));
@@ -47,12 +50,14 @@ TEST(UtilTest, LexicalCastTest) {
   EXPECT_EQ("123.4", s);
 }
 
+// DOC: 针对空指针识别的测试
 TEST(UtilTest, CheckNotNullTest) {
   int a = 0;
   CHECK_NOTNULL(&a);
   EXPECT_DEATH(CHECK_NOTNULL(nullptr));
 }
 
+// DOC: 检测语料前缀功能测试
 TEST(UtilTest, StartsWith) {
   const std::string str = "abcdefg";
   EXPECT_TRUE(string_util::StartsWith(str, ""));
@@ -63,6 +68,7 @@ TEST(UtilTest, StartsWith) {
   EXPECT_FALSE(string_util::StartsWith(str, "foobar"));
 }
 
+// DOC: 检测语料后缀功能测试
 TEST(UtilTest, EndsWith) {
   const std::string str = "abcdefg";
   EXPECT_TRUE(string_util::EndsWith(str, ""));
@@ -74,6 +80,7 @@ TEST(UtilTest, EndsWith) {
   EXPECT_FALSE(string_util::EndsWith(str, "foobarbuzbuz"));
 }
 
+// DOC: 十六进制转换功能测试
 TEST(UtilTest, Hex) {
   for (char32 a = 0; a < 100000; ++a) {
     const std::string s = string_util::IntToHex<char32>(a);
@@ -85,6 +92,7 @@ TEST(UtilTest, Hex) {
   CHECK_EQ(n, string_util::HexToInt<int>("24F76"));
 }
 
+// DOC: 文本分割功能测试
 TEST(UtilTest, SplitTest) {
   std::vector<std::string> tokens;
 
@@ -128,6 +136,7 @@ TEST(UtilTest, SplitTest) {
   EXPECT_EQ(tokens[5], "test");
 }
 
+// DOC: 语料分割功能测试
 TEST(UtilTest, SplitPieceTest) {
   std::vector<absl::string_view> tokens;
 
@@ -171,6 +180,7 @@ TEST(UtilTest, SplitPieceTest) {
   EXPECT_EQ(tokens[5], "test");
 }
 
+// DOC: 语料合并功能测试
 TEST(UtilTest, JoinTest) {
   std::vector<std::string> tokens;
   tokens.push_back("this");
@@ -184,6 +194,7 @@ TEST(UtilTest, JoinTest) {
   EXPECT_EQ(string_util::Join(tokens, " "), "this is  test");
 }
 
+// DOC: 整形书语料合并功能测试
 TEST(UtilTest, JoinIntTest) {
   std::vector<int> tokens;
   tokens.push_back(10);
@@ -195,6 +206,7 @@ TEST(UtilTest, JoinIntTest) {
   EXPECT_EQ(string_util::Join(tokens, ""), "102-45");
 }
 
+// DOC: 语料连接功能测试
 TEST(UtilTest, StrCatTest) {
   EXPECT_EQ("", string_util::StrCat(""));
   EXPECT_EQ("ab", string_util::StrCat("ab"));
@@ -206,11 +218,13 @@ TEST(UtilTest, StrCatTest) {
   EXPECT_EQ("foobar", string_util::StrCat(a, b));
 }
 
+// DOC: string_view 类型基本功能测试
 TEST(UtilTest, StringViewTest) {
   absl::string_view s;
   EXPECT_EQ(0, s.find("", 0));
 }
 
+// DOC: 文本替换功能测试
 TEST(UtilTest, StringReplaceTest) {
   EXPECT_EQ("fbb", string_util::StringReplace("foo", "o", "b", true));
   EXPECT_EQ("fbo", string_util::StringReplace("foo", "o", "b", false));
@@ -224,6 +238,7 @@ TEST(UtilTest, StringReplaceTest) {
   EXPECT_EQ("abc", string_util::StringReplace("abc", "", "b", false));
 }
 
+// DOC: 平凡数据类型编码功能测试
 TEST(UtilTest, EncodePODTet) {
   std::string tmp;
   {
@@ -269,6 +284,7 @@ TEST(UtilTest, EncodePODTet) {
   }
 }
 
+// DOC: 整形数据转文本功能测试
 TEST(UtilTest, ItoaTest) {
   auto Itoa = [](int v) {
     char buf[16];
@@ -283,11 +299,13 @@ TEST(UtilTest, ItoaTest) {
   EXPECT_EQ("-522", Itoa(-522));
 }
 
+// DOC: 获取 UTF-8 字符长度功能测试
 TEST(UtilTest, OneCharLenTest) {
   EXPECT_EQ(1, string_util::OneCharLen("abc"));
   EXPECT_EQ(3, string_util::OneCharLen("テスト"));
 }
 
+// DOC: UTF-8 解码测试
 TEST(UtilTest, DecodeUTF8Test) {
   size_t mblen = 0;
 
@@ -383,6 +401,7 @@ TEST(UtilTest, DecodeUTF8Test) {
   }
 }
 
+// DOC: UTF-8 编码功能测试
 TEST(UtilTest, EncodeUTF8Test) {
   char buf[16];
   for (char32 cp = 1; cp <= kMaxUnicode; ++cp) {
@@ -408,6 +427,7 @@ TEST(UtilTest, EncodeUTF8Test) {
   EXPECT_EQ(3, mblen);
 }
 
+// DOC: Unicode 到 UTF-8 编码转换功能测试
 TEST(UtilTest, UnicodeCharToUTF8Test) {
   for (char32 cp = 1; cp <= kMaxUnicode; ++cp) {
     if (!string_util::IsValidCodepoint(cp)) continue;
@@ -418,6 +438,7 @@ TEST(UtilTest, UnicodeCharToUTF8Test) {
   }
 }
 
+// DOC: 检测 Unicode 编码合法性功能测试
 TEST(UtilTest, IsStructurallyValidTest) {
   EXPECT_TRUE(string_util::IsStructurallyValid("abcd"));
   EXPECT_TRUE(
@@ -443,6 +464,7 @@ TEST(UtilTest, IsStructurallyValidTest) {
   EXPECT_FALSE(string_util::IsStructurallyValid("\xf0\x83\xbe\xbd"));
 }
 
+// DOC: Unicode 转 UTF-8 编码功能测试
 TEST(UtilTest, UnicodeTextToUTF8Test) {
   string_util::UnicodeText ut;
 
@@ -456,6 +478,7 @@ TEST(UtilTest, UnicodeTextToUTF8Test) {
   EXPECT_EQ("これはtest", string_util::UnicodeTextToUTF8(ut));
 }
 
+// DOC: 字典型数据通用功能测试
 TEST(UtilTest, MapUtilTest) {
   const std::map<std::string, std::string> kMap = {
       {"a", "A"}, {"b", "B"}, {"c", "C"}};
@@ -477,11 +500,13 @@ TEST(UtilTest, MapUtilTest) {
   EXPECT_DEATH(port::FindOrDie(kMap, "d"));
 }
 
+// DOC: 数组型数据通用功能测试
 TEST(UtilTest, MapUtilVecTest) {
   const std::map<std::vector<int>, std::string> kMap = {{{0, 1}, "A"}};
   EXPECT_DEATH(port::FindOrDie(kMap, {0, 2}));
 }
 
+// DOC: 输入输出功能测试
 TEST(UtilTest, InputOutputBufferTest) {
   test::ScopedTempFile sf("test_file");
 
@@ -509,11 +534,13 @@ TEST(UtilTest, InputOutputBufferTest) {
   }
 }
 
+// DOC: 输入输出文件合法性检测功能测试
 TEST(UtilTest, InputOutputBufferInvalidFileTest) {
   auto input = filesystem::NewReadableFile("__UNKNOWN__FILE__");
   EXPECT_NOT_OK(input->status());
 }
 
+// DOC: 标准库元素删除功能测试
 TEST(UtilTest, STLDeleteELementsTest) {
   class Item {
    public:
@@ -534,6 +561,7 @@ TEST(UtilTest, STLDeleteELementsTest) {
   EXPECT_EQ(0, data.size());
 }
 
+// DOC: 状态功能测试
 TEST(UtilTest, StatusTest) {
   const util::Status ok;
   EXPECT_TRUE(ok.ok());
@@ -560,6 +588,7 @@ TEST(UtilTest, StatusTest) {
   }
 }
 
+// DOC: 路径合并功能测试
 TEST(UtilTest, JoinPathTest) {
 #ifdef OS_WIN
   EXPECT_EQ("foo\\bar\\buz", util::JoinPath("foo", "bar", "buz"));
@@ -572,6 +601,7 @@ TEST(UtilTest, JoinPathTest) {
   EXPECT_EQ("", util::JoinPath(""));
 }
 
+// DOC: 数据随机采样功能测试
 TEST(UtilTest, ReservoirSamplerTest) {
   std::vector<int> sampled;
   random::ReservoirSampler<int> sampler(&sampled, 100);

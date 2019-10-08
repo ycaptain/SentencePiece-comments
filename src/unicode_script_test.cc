@@ -20,12 +20,14 @@
 
 namespace sentencepiece {
 namespace unicode_script {
+// DOC: 字符归属字符集检测功能测试接口
 ScriptType GetScriptType(absl::string_view s) {
   const auto ut = string_util::UTF8ToUnicodeText(s);
   CHECK_EQ(1, ut.size());
   return GetScript(ut[0]);
 }
 
+// DOC: 字符归属字符集检测功能测试
 TEST(UnicodeScript, GetScriptTypeTest) {
   EXPECT_EQ(U_Han, GetScriptType("京"));
   EXPECT_EQ(U_Han, GetScriptType("太"));
