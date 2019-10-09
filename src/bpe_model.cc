@@ -41,9 +41,12 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
 
   // 符号对。
   struct SymbolPair {
-    int left;     // 左索引。 left index of this pair
-    int right;    // 右索引。 right index of this pair
-    float score;  // 该符号对的分数，越高越好(越有可能是一个词汇)。 score of this pair. large is better.
+	// 左索引。
+    int left;     // left index of this pair
+	// 右索引。
+    int right;    // right index of this pair
+	// 该符号对的分数，越高越好(越有可能是一个词汇)。
+    float score;  // score of this pair. large is better.
     size_t size;  // length of this piece
   };
 
@@ -57,10 +60,14 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
   };
 
   struct Symbol {
-    int prev;     // 此符号的前一个有效符号的索引。 prev index of this symbol. -1 for BOS.
-    int next;     // 此符号的后一个有效符号的索引。 next index of tihs symbol. -1 for EOS.
-    bool freeze;  // 这个符号是否从未被合并。 this symbol is never be merged.
-    absl::string_view piece; // 字面值。
+	// 此符号的前一个有效符号的索引。 
+    int prev;     // prev index of this symbol. -1 for BOS.
+	// 此符号的后一个有效符号的索引。 
+    int next;     // next index of tihs symbol. -1 for EOS.
+	// 这个符号是否从未被合并。
+    bool freeze;  // this symbol is never be merged.
+	// 字面值。
+    absl::string_view piece;
   };
 
   using Agenda = std::priority_queue<SymbolPair *, std::vector<SymbolPair *>,

@@ -40,12 +40,18 @@ class Trainer : public TrainerInterface {
   // 符号代表着一(一元符号)或两个单字(二元符号)。
   // Symbol represents a character or symbol bigram.
   struct Symbol {
-    const Symbol *left;              // 此二元模型中左侧的符号。 left symbol in bigram
-    const Symbol *right;             // 此二元模型中右侧的符号。 right symbol in bigram
-    string_util::UnicodeText chars;  // 所有压平的字序列。 all flattend chracter sequence
-    bool is_unk;                     // 这个符号是否是未知字。 true if this symbol is unknown.
-    uint64 fp;                       // 该符号的指纹。 fingerprint of this symbol.
-    uint64 freq;                     // 该符号出现的频数。 frequency of this symbol.
+	// 此二元模型中左侧的符号。
+    const Symbol *left;              // left symbol in bigram
+	// 此二元模型中右侧的符号。
+    const Symbol *right;             // right symbol in bigram
+	// 所有压平的字序列。
+    string_util::UnicodeText chars;  // all flattend chracter sequence
+	// 这个符号是否是未知字。
+    bool is_unk;                     // true if this symbol is unknown.
+	// 该符号的指纹。
+    uint64 fp;                       // fingerprint of this symbol.
+	// 该符号出现的频数。
+    uint64 freq;                     // frequency of this symbol.
 
 	// 该符号出现过的位置列表。存储的是编码后的位置形式。(见下)
     // Position list. Use set so that we can keep the order of occurrence.
@@ -61,9 +67,12 @@ class Trainer : public TrainerInterface {
 
   // [prev, left], [left, right], [right, next]各组成一个二元符号
   struct Position {
-    int sid;    // 句子id sentence id
-    int left;   // 左符号索引 left symbol index
-    int right;  // 右符号索引 right symbol index
+	// 句子id
+    int sid;    // sentence id
+	// 左符号索引
+    int left;   // left symbol index
+	// 右符号索引
+    int right;  // right symbol index
   };
 
   // 将Position编码成64位无符号整数。
