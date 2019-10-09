@@ -39,13 +39,15 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
     return {};
   }
 
+  // 符号对。
   struct SymbolPair {
-    int left;     // left index of this pair
-    int right;    // right index of this pair
-    float score;  // score of this pair. large is better.
+    int left;     // 左索引。 left index of this pair
+    int right;    // 右索引。 right index of this pair
+    float score;  // 该符号对的分数，越高越好(越有可能是一个词汇)。 score of this pair. large is better.
     size_t size;  // length of this piece
   };
 
+  // 符号对比较器
   class SymbolPairComparator {
    public:
     const bool operator()(SymbolPair *h1, SymbolPair *h2) {
@@ -55,10 +57,10 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
   };
 
   struct Symbol {
-    int prev;     // prev index of this symbol. -1 for BOS.
-    int next;     // next index of tihs symbol. -1 for EOS.
-    bool freeze;  // this symbol is never be merged.
-    absl::string_view piece;
+    int prev;     // 此符号的前一个有效符号的索引。 prev index of this symbol. -1 for BOS.
+    int next;     // 此符号的后一个有效符号的索引。 next index of tihs symbol. -1 for EOS.
+    bool freeze;  // 这个符号是否从未被合并。 this symbol is never be merged.
+    absl::string_view piece; // 字面值。
   };
 
   using Agenda = std::priority_queue<SymbolPair *, std::vector<SymbolPair *>,

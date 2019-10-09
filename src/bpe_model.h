@@ -21,6 +21,7 @@
 namespace sentencepiece {
 namespace bpe {
 
+// 按照BPE算法得来的分词模型。
 // Segmentation model with BPE (Byte Pair Encoding)
 // Details:
 // Neural Machine Translation of Rare Words with Subword Units
