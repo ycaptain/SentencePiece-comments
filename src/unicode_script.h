@@ -19,7 +19,7 @@
 
 namespace sentencepiece {
 namespace unicode_script {
-// DOC: 定义枚举类型 ScriptType，表示字符集类型
+// DOC: 瀹氫箟鏋氫妇绫诲瀷 ScriptType锛岃〃绀哄瓧绗﹂泦绫诲瀷
 enum ScriptType {
   U_Adlam,
   U_Ahom,

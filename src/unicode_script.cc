@@ -17,44 +17,44 @@
 #include "unicode_script_map.h"
 #include "util.h"
 
-// DOC: ÃüÃû¿Õ¼ä sentencepiece
+// DOC: å‘½åç©ºé—´ sentencepiece
 namespace sentencepiece {
-// DOC: ÃüÃû¿Õ¼ä sentencepiece::unicode_script
+// DOC: å‘½åç©ºé—´ sentencepiece::unicode_script
 namespace unicode_script {
 namespace {
 // DOC:
-// ÓïÁÏËùÊô×Ö·û¼¯¼ì²âÀà
+// è¯­æ–™æ‰€å±å­—ç¬¦é›†æ£€æµ‹ç±»
 class GetScriptInternal {
  public:
 // DOC:
-// GetScriptInternal Àà¹¹Ôìº¯Êı ³õÊ¼»¯×Ö·û¼¯±í
+// GetScriptInternal ç±»æ„é€ å‡½æ•° åˆå§‹åŒ–å­—ç¬¦é›†è¡¨
 // 
-// ²ÎÊı:
-//      smap_ -- ×Ö·û¼¯±í´æ´¢±äÁ¿µÄÒıÓÃ
+// å‚æ•°:
+//      smap_ -- å­—ç¬¦é›†è¡¨å­˜å‚¨å˜é‡çš„å¼•ç”¨
   GetScriptInternal() { InitTable(&smap_); }
 
   // DOC:
-  // »ñÈ¡×Ö·û¹éÊô×Ö·û¼¯ÀàĞÍ
+  // è·å–å­—ç¬¦å½’å±å­—ç¬¦é›†ç±»å‹
   // 
-  // ²ÎÊı:
-  //      c -- ´ıÅĞ¶ÏµÄ×Ö·û
+  // å‚æ•°:
+  //      c -- å¾…åˆ¤æ–­çš„å­—ç¬¦
   ScriptType GetScript(char32 c) const {
 	// DOC:
-	// µ÷ÓÃÕë¶Ô STL map µÄÍ¨ÓÃ²éÕÒ·½·¨
+	// è°ƒç”¨é’ˆå¯¹ STL map çš„é€šç”¨æŸ¥æ‰¾æ–¹æ³•
     return port::FindWithDefault(smap_, c, ScriptType::U_Common);
   }
 
  private:
-  // ÓïÑÔ±í
+  // è¯­è¨€è¡¨
   std::unordered_map<char32, ScriptType> smap_;
 };
 }  // namespace
 
 // DOC:
-// »ñÈ¡×Ö·û¹éÊô×Ö·û¼¯ÀàĞÍ
+// è·å–å­—ç¬¦å½’å±å­—ç¬¦é›†ç±»å‹
 // 
-// ²ÎÊı:
-//      c -- ´ıÅĞ¶ÏµÄ×Ö·û
+// å‚æ•°:
+//      c -- å¾…åˆ¤æ–­çš„å­—ç¬¦
 ScriptType GetScript(char32 c) {
   static GetScriptInternal sc;
   return sc.GetScript(c);

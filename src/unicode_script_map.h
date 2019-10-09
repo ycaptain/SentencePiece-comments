@@ -17,8 +17,8 @@
 namespace sentencepiece {
 namespace unicode_script {
 namespace {
-// DOC: ³õÊ¼»¯×Ö·û¼¯±í
-// Í¨¹ıÊ®Áù½øÖÆ×÷ÎªÏÂ±êÉú³É Unicode ±àÂëµ½×Ö·û¼¯ÀàĞÍµÄ¶à¶ÔÒ»Ó³Éä
+// DOC: åˆå§‹åŒ–å­—ç¬¦é›†è¡¨
+// é€šè¿‡åå…­è¿›åˆ¶ä½œä¸ºä¸‹æ ‡ç”Ÿæˆ Unicode ç¼–ç åˆ°å­—ç¬¦é›†ç±»å‹çš„å¤šå¯¹ä¸€æ˜ å°„
 void InitTable(std::unordered_map<char32, ScriptType> *smap) {
   CHECK_NOTNULL(smap)->clear();
   for (char32 c = 0x0000; c <= 0x001F; ++c) (*smap)[c] = U_Common;
