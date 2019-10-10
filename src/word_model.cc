@@ -15,12 +15,12 @@
 #include "word_model.h"
 #include "util.h"
 
-// 命名空间 sentencepiece
+// 鍛藉悕绌洪棿 sentencepiece
 namespace sentencepiece {
 namespace word {
 
-// 定义一个以 model_proto 为参数的分词模型
-// 并初始化分词工具
+// 瀹氫箟涓�涓互 model_proto 涓哄弬鏁扮殑鍒嗚瘝妯″瀷
+// 骞跺垵濮嬪寲鍒嗚瘝宸ュ叿
 Model::Model(const ModelProto &model_proto) {
   model_proto_ = &model_proto;
   InitializePieces();
@@ -28,8 +28,8 @@ Model::Model(const ModelProto &model_proto) {
 
 Model::~Model() {}
 
-// 对已经规范化的字符串 normalized 进行编码，并返回编码后的结果
-// 若字符串 normalized 为空或者状态异常，则直接返回空。否则进行编码并输出
+// 瀵瑰凡缁忚鑼冨寲鐨勫瓧绗︿覆 normalized 杩涜缂栫爜锛屽苟杩斿洖缂栫爜鍚庣殑缁撴灉
+// 鑻ュ瓧绗︿覆 normalized 涓虹┖鎴栬�呯姸鎬佸紓甯革紝鍒欑洿鎺ヨ繑鍥炵┖銆傚惁鍒欒繘琛岀紪鐮佸苟杈撳嚭
 EncodeResult Model::Encode(absl::string_view normalized) const {
   if (!status().ok() || normalized.empty()) {
     return {};
