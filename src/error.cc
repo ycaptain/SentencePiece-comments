@@ -18,8 +18,12 @@
 
 namespace sentencepiece {
 namespace error {
+// DOC:
+// 全局错误数
 int gTestCounter = 0;
 
+// DOC:
+// 因无法修复的错误终止程序
 void Abort() {
   if (GetTestCounter() == 1) {
     SetTestCounter(2);
@@ -29,6 +33,8 @@ void Abort() {
   }
 }
 
+// DOC:
+// 退出程序
 void Exit(int code) {
   if (GetTestCounter() == 1) {
     SetTestCounter(2);
@@ -37,7 +43,17 @@ void Exit(int code) {
   }
 }
 
+// DOC:
+// 配置测试计数器。
+//
+// 参数:
+//      c -- 测试计数器
 void SetTestCounter(int c) { gTestCounter = c; }
+// DOC:
+// 返回测试计数器。
+//
+// 返回:
+//      测试计数器。
 bool GetTestCounter() { return gTestCounter; }
 }  // namespace error
 
@@ -83,8 +99,12 @@ void Status::set_error_message(const char* str) {
   rep_->error_message = str;
 }
 
+// DOC:
+// 返回错误代码
 error::Code Status::code() const { return ok() ? error::OK : rep_->code; }
 
+// DOC:
+// 返回错误信息
 std::string Status::ToString() const {
   if (rep_ == nullptr) return "OK";
 
