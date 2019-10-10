@@ -20,13 +20,24 @@
 namespace sentencepiece {
 namespace {
 
-// 空格
+// DOC:
+// 将要替换空格的 `▁` 字符，Lower One Eighth Block，U+2581
 #define WS "\xe2\x96\x81"
 
+// DOC:
+// 声明测试模型类型常量unigram, bpe, word, char
 const std::vector<TrainerSpec::ModelType> kModelTypes = {
     TrainerSpec::UNIGRAM, TrainerSpec::BPE, TrainerSpec::WORD,
     TrainerSpec::CHAR};
 
+// DOC:
+// 构造基础模型原型。
+//
+// 参数:
+//      type -- 模型类型
+//
+// 返回:
+//      模型原型。
 ModelProto MakeBaseModelProto(TrainerSpec::ModelType type) {
   ModelProto model_proto;
   auto *sp1 = model_proto.add_pieces();
@@ -44,6 +55,13 @@ ModelProto MakeBaseModelProto(TrainerSpec::ModelType type) {
   return model_proto;
 }
 
+// DOC:
+// 向模型原型中添加句子片段
+//
+// 参数:
+//      model_proto -- 模型原型
+//      piece -- 被添加的句子片段
+//      score -- 句子片段分数
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -51,6 +69,8 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
   sp->set_score(score);
 }
 
+// DOC:
+// 默认句子片段测试
 TEST(ModelInterfaceTest, GetDefaultPieceTest) {
   {
     ModelProto model_proto;
@@ -99,6 +119,8 @@ TEST(ModelInterfaceTest, GetDefaultPieceTest) {
   }
 }
 
+// DOC:
+// 设置模型接口测试
 TEST(ModelInterfaceTest, SetModelInterfaceTest) {
   for (const auto type : kModelTypes) {
     ModelProto model_proto = MakeBaseModelProto(type);
@@ -113,6 +135,8 @@ TEST(ModelInterfaceTest, SetModelInterfaceTest) {
   }
 }
 
+// DOC:
+// 句子片段转id测试
 TEST(ModelInterfaceTest, PieceToIdTest) {
   for (const auto type : kModelTypes) {
     ModelProto model_proto = MakeBaseModelProto(type);
@@ -198,7 +222,10 @@ TEST(ModelInterfaceTest, PieceToIdTest) {
   }
 }
 
+// DOC:
+// 非法模型测试
 TEST(ModelInterfaceTest, InvalidModelTest) {
+  // 空句子片段
   // Empty piece.
   {
     ModelProto model_proto = MakeBaseModelProto(TrainerSpec::UNIGRAM);
@@ -207,6 +234,7 @@ TEST(ModelInterfaceTest, InvalidModelTest) {
     EXPECT_FALSE(model->status().ok());
   }
 
+  // 重复句子片段
   // Duplicated pieces.
   {
     ModelProto model_proto = MakeBaseModelProto(TrainerSpec::UNIGRAM);
@@ -216,6 +244,7 @@ TEST(ModelInterfaceTest, InvalidModelTest) {
     EXPECT_FALSE(model->status().ok());
   }
 
+  // 多个未知标记(unknown)
   // Multiple unknowns.
   {
     ModelProto model_proto = MakeBaseModelProto(TrainerSpec::UNIGRAM);
@@ -224,6 +253,7 @@ TEST(ModelInterfaceTest, InvalidModelTest) {
     EXPECT_FALSE(model->status().ok());
   }
 
+  // 没有未知标记(unknown)
   // No unknown.
   {
     ModelProto model_proto = MakeBaseModelProto(TrainerSpec::UNIGRAM);
@@ -233,6 +263,14 @@ TEST(ModelInterfaceTest, InvalidModelTest) {
   }
 }
 
+// DOC:
+// 随机生成对应长度的字符串
+//
+// 参数:
+//      length -- 句子长度
+//
+// 返回:
+//      随机生成的字符串。
 std::string RandomString(int length) {
   const char kAlphaNum[] =
       "0123456789"
@@ -248,6 +286,8 @@ std::string RandomString(int length) {
   return result;
 }
 
+// DOC:
+// 句子片段转id压力测试
 TEST(ModelInterfaceTest, PieceToIdStressTest) {
   for (const auto type : kModelTypes) {
     for (int i = 0; i < 100; ++i) {
@@ -275,6 +315,8 @@ TEST(ModelInterfaceTest, PieceToIdStressTest) {
   }
 }
 
+// DOC:
+// 分词测试
 TEST(ModelInterfaceTest, SplitIntoWordsTest) {
   {
     const auto v = SplitIntoWords(WS "this" WS "is" WS "a" WS "pen");
@@ -314,6 +356,8 @@ TEST(ModelInterfaceTest, SplitIntoWordsTest) {
   }
 }
 
+// DOC:
+// 分词前缀测试
 TEST(ModelInterfaceTest, SplitIntoWordsSuffixTest) {
   {
     const auto v = SplitIntoWords("this" WS "is" WS "a" WS "pen" WS, true);
