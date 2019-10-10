@@ -45,8 +45,10 @@ TEST(TrainerInterfaceTest, IsValidSentencePieceTest) {
   EXPECT_FALSE(trainer.IsValidSentencePiece({0x00, 0x01}));
   EXPECT_FALSE(trainer.IsValidSentencePiece({0x00}));
 
+  // 默认训练器特性。
   // Default trainer spec.
   EXPECT_FALSE(IsValid(""));
+  // 过长的输入是无效的
   EXPECT_FALSE(IsValid("12345678912345678"));  // too long
   EXPECT_TRUE(IsValid("a"));
   EXPECT_TRUE(IsValid(WS));
@@ -74,6 +76,7 @@ TEST(TrainerInterfaceTest, IsValidSentencePieceTest) {
   EXPECT_TRUE(IsValid(WS "a"));
   EXPECT_FALSE(IsValid("a" WS));
   EXPECT_FALSE(IsValid(WS "a" WS));
+  // "a b"是有效的分词
   EXPECT_TRUE(IsValid("a" WS "b"));  // "a b" is a valid piece.
   EXPECT_TRUE(IsValid(WS "a" WS "b"));
   EXPECT_TRUE(IsValid(WS "a" WS "b" WS "c"));
@@ -132,6 +135,7 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
 
   auto trainer_spec = base_trainer_spec;
 
+  // 检测默认值
   // Check default values.
   EXPECT_EQ(0, trainer_spec.unk_id());
   EXPECT_EQ(1, trainer_spec.bos_id());
@@ -226,6 +230,7 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
   }
 
   {
+	// 未知字未被定义将引发错误。
     // UNK is not defined.
     auto trainer_spec = base_trainer_spec;
     trainer_spec.set_unk_id(-1);
@@ -236,6 +241,7 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
   }
 
   {
+	// 未知字超出范围将引发错误。
     // UNK is out-of-range.
     auto trainer_spec = base_trainer_spec;
     trainer_spec.set_unk_id(640000);
@@ -256,6 +262,7 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
   }
 
   {
+	// 不能把未知字赋予乘控制符。
     // Cannot assign <unk> as control symbol.
     auto trainer_spec = base_trainer_spec;
     trainer_spec.set_unk_id(0);
@@ -267,6 +274,7 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
   }
 
   {
+	// 存在相同的控制符是非法的。
     // Dup.
     auto trainer_spec = base_trainer_spec;
     trainer_spec.add_control_symbols("<foo>");

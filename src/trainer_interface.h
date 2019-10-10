@@ -79,6 +79,9 @@ class TrainerInterface {
  protected:
   // 返回给定的词语是否有效。结果与max_sentencepiece_length，
   // split_by_whiespace，split_by_unicode_script有关。
+  //
+  // 参数：
+  //       piece ---- 给定的词语
   // Returns true if |piece| is valid sentence piece.
   // The result is affected by
   // max_sentencepiece_length, split_by_whiespace, split_by_unicode_script.

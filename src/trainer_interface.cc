@@ -33,7 +33,7 @@
 
 namespace sentencepiece {
 
-// 空格(unicode)
+// "▁"(unicode)，用来替代空格
 const char32 TrainerInterface::kWSChar = L'\u2581';
 const char TrainerInterface::kWSStr[] = "\xe2\x96\x81";
 
@@ -90,8 +90,10 @@ util::Status VerifySpec(const TrainerSpec &trainer_spec) {
   return util::OkStatus();
 }
 
+// 句子选择器
 class SentenceSelector {
  public:
+  // 采样器
   using Sampler = random::ReservoirSampler<TrainerInterface::Sentence>;
 
   static constexpr int64 kTooBigSentencesSize = 1000000;
@@ -112,6 +114,7 @@ class SentenceSelector {
     }
   }
 
+  // 完成选择。
   void Finish() const {
     if (sentences_->size() > kTooBigSentencesSize) {
       LOG(WARNING) << "Too many sentences are loaded! (" << sentences_->size()
@@ -124,6 +127,13 @@ class SentenceSelector {
     }
   }
 
+  // 添加选择的句子。
+  //
+  // 参数：
+  //       sentence ---- 将添加的句子
+  //
+  // 返回：
+  //       添加是否成功。
   bool Add(const std::pair<std::string, int64> &sentence) {
     if (spec_->input_sentence_size() <= 0) {
       sentences_->emplace_back(sentence);
@@ -273,6 +283,7 @@ util::Status TrainerInterface::LoadSentences() {
 
   int too_long_lines = 0;
 
+  // 遍历训练器描述指定的文件
   for (const auto &filename : trainer_spec_.input()) {
     LOG(INFO) << "Loading corpus: " << filename;
     std::string sentence;
@@ -318,6 +329,7 @@ util::Status TrainerInterface::LoadSentences() {
   }
 
 END:
+  // 出错就报
   // Emits error message if any.
   selector.Finish();
 
@@ -332,7 +344,7 @@ END:
   if (self_test_samples_.size() > 0)
     LOG(INFO) << "Loaded " << self_test_samples_.size() << " test sentences";
 
-  // 规范化并移除空字符串。
+  // 正规化并移除空字符串。
   // Normalize and removes empty string.
   {
     const normalizer::Normalizer normalizer(normalizer_spec_);
@@ -417,6 +429,7 @@ END:
 
   CHECK_OR_RETURN(!port::ContainsKey(required_chars_, kUNKChar));
 
+  // 将罕见的字符替换成未知字。
   // Replaces rare characters (characters not included in required_chars_)
   // with kUNKChar.
   for (auto &w : sentences_) {
@@ -466,6 +479,7 @@ void TrainerInterface::SplitSentencesByWhitespace() {
 util::Status TrainerInterface::Serialize(ModelProto *model_proto) const {
   RETURN_IF_ERROR(status());
 
+  // 不允许相同的句子。
   // Duplicated sentencepiece is not allowed.
   std::set<std::string> dup;
 
