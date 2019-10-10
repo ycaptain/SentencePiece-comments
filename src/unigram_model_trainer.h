@@ -57,7 +57,7 @@ class TrainerModel : public Model {
   const SentencePieces &GetSentencePieces() const;
 
   // DOC:
-  //    对UnigramModel设置新的句段
+  //    对 UnigramModel 设置新的句段
   // 注意:
   //    只包含元信息 起始符/终止符等不包含在内
   // Sets sentencepieces. The sentencepieces are moved.
@@ -90,7 +90,7 @@ class TrainerModel : public Model {
 
 // DOC:
 // Trainer类
-// 继承TrainerInterface类
+// 继承 TrainerInterface 类
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,
@@ -104,13 +104,13 @@ class Trainer : public TrainerInterface {
 
   // DOC:
   //    从训练集中选取种子分词块
-  //    所选分词块对数量由seed_sentencepiece_size决定
+  //    所选分词块对数量由 seed_sentencepiece_size 决定
   // Makes seed pieces from the training corpus.
   // The size of seed pieces is determined by seed_sentencepiece_size.
   TrainerModel::SentencePieces MakeSeedSentencePieces() const;
 
   // DOC:
-  //    进行EM(期望最大化)算法的E步 -- 求期望
+  //    进行 EM (期望最大化) 算法的 E 步 -- 求期望
   //
   // 参数:
   //    model -- 训练模型的引用
@@ -128,7 +128,7 @@ class Trainer : public TrainerInterface {
                               int64 *num_tokens) const;
 
   // DOC:
-  //    进行EM(期望最大化)算法的M步 -- 求极大
+  //    进行 EM (期望最大化) 算法的 M 步 -- 求极大
   //
   // 参数:
   //    model -- 训练模型引用
@@ -142,7 +142,7 @@ class Trainer : public TrainerInterface {
       const TrainerModel &model, const std::vector<float> &expected) const;
 
   // DOC:
-  //    每次进行EM(期望最大化)子迭代后 对当前全部分词块进行剪枝
+  //    每次进行 EM (期望最大化) 子迭代后 对当前全部分词块进行剪枝
   //    剪去冗余部分 提高算法效率
   // Heuristically prunes the current pieces.
   // This is called after each EM sub-iteration.
