@@ -22,8 +22,12 @@
 #include "common.h"
 #include "third_party/absl/strings/string_view.h"
 
+// 命名空间:sentencepiece::test
 namespace sentencepiece {
 namespace test {
+// 通过定义TEST()宏 进行相关测试
+// 返回值为0则表示测试通过
+// 如果测试结果错误或失败 则结束进程或返回非零值
 // Run some of the tests registered by the TEST() macro.
 // TEST(Foo, Hello) { ... }
 // TEST(Foo, World) { ... }
@@ -32,6 +36,11 @@ namespace test {
 // Dies or returns a non-zero value if some test fails.
 int RunAllTests();
 
+// 定义ScopedTempFile
+// 成员变量:
+//      filename_ -- 保存当前访问的文件名
+// 成员方法:
+//      返回当前访问的文件名
 class ScopedTempFile {
  public:
   explicit ScopedTempFile(absl::string_view filename);
@@ -43,6 +52,8 @@ class ScopedTempFile {
   std::string filename_;
 };
 
+// 定义Tester类
+// Tester类可以在进行声明时保持当前状态的数据
 // An instance of Tester is allocated to hold temporary state during
 // the execution of an assertion.
 class Tester {
@@ -57,6 +68,11 @@ class Tester {
     }
   }
 
+  // 返回创建是否正常
+  // 在测试类创建失败时 输出对应报错内容
+  // 参数:
+  //    b -- 判断build是否正常(正常:True 异常:False)
+  //    msg -- 所需输出的报错信息
   Tester &Is(bool b, const char *msg) {
     if (!b) {
       ss_ << " failed: " << msg;
@@ -65,6 +81,13 @@ class Tester {
     return *this;
   }
 
+  // 返回两数误差是否在可接受范围内
+  // 若误差较大 则输出提示信息
+  // 参数:
+  //    val1,val2 -- 所需比较的两个数值
+  //    abs_error -- 允许误差
+  //    msg1 -- val1相关返回信息
+  //    msg2 -- val2相关返回信息
   Tester &IsNear(double val1, double val2, double abs_error, const char *msg1,
                  const char *msg2) {
     const double diff = std::fabs(val1 - val2);
@@ -78,6 +101,7 @@ class Tester {
     return *this;
   }
 
+  // 定义二元比较关系运算符
 #define BINARY_OP(name, op)                                                  \
   template <class X, class Y>                                                \
   Tester &name(const X &x, const Y &y, const char *msg1, const char *msg2) { \
@@ -96,6 +120,7 @@ class Tester {
   BINARY_OP(IsLt, <)
 #undef BINARY_OP
 
+  // 当错误发生后 将返回值转变为报错信息
   // Attach the specified value to the error message if an error has occurred
   template <class V>
   Tester &operator<<(const V &value) {
@@ -112,6 +137,7 @@ class Tester {
   std::stringstream ss_;
 };
 
+// 文件是否建立成功及其状态的相关测试
 #define EXPECT_TRUE(c) \
   sentencepiece::test::Tester(__FILE__, __LINE__).Is((c), #c)
 #define EXPECT_FALSE(c) \
@@ -119,6 +145,7 @@ class Tester {
 #define EXPECT_STREQ(a, b)                        \
   sentencepiece::test::Tester(__FILE__, __LINE__) \
       .IsEq(std::string(a), std::string(b), #a, #b)
+// 判断a b之间是否为相等/不等/大于等于/大于/小于等于/小于/误差是否在范围内的相关测试
 #define EXPECT_EQ(a, b) \
   sentencepiece::test::Tester(__FILE__, __LINE__).IsEq((a), (b), #a, #b)
 #define EXPECT_NE(a, b) \
@@ -133,9 +160,11 @@ class Tester {
   sentencepiece::test::Tester(__FILE__, __LINE__).IsLt((a), (b), #a, #b)
 #define EXPECT_NEAR(a, b, c) \
   sentencepiece::test::Tester(__FILE__, __LINE__).IsNear((a), (b), (c), #a, #b)
+// 判断运行状态是否正常的相关测试
 #define EXPECT_OK(c) EXPECT_EQ(c, ::sentencepiece::util::OkStatus())
 #define EXPECT_NOT_OK(c) EXPECT_NE(c, ::sentencepiece::util::OkStatus())
 
+// 判断进程是否中断的测试
 #define EXPECT_DEATH(statement) \
   {                             \
     error::SetTestCounter(1);   \
@@ -143,6 +172,7 @@ class Tester {
     error::SetTestCounter(0);   \
   };
 
+//定义宏将a b c连接
 #define TCONCAT(a, b, c) TCONCAT1(a, b, c)
 #define TCONCAT1(a, b, c) a##b##c
 
@@ -160,6 +190,8 @@ class Tester {
                                         &TCONCAT(base, _Test_, name)::_RunIt); \
   void TCONCAT(base, _Test_, name)::_Run()
 
+// 进行寄存器测试
+// 不会被专门直接调用
 // Register the specified test.  Typically not used directly, but
 // invoked via the macro expansion of TEST.
 extern bool RegisterTest(const char *base, const char *name, void (*func)());
