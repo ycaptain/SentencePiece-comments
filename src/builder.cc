@@ -148,6 +148,15 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
 }
 }  // namespace
 
+// DOC:
+// 编译字符映射键值表为二进制字符序列。
+//
+// 参数:
+//      chars_map -- 字符映射键值表
+//      output -- 输出目标
+//
+// 返回:
+//      编译状态。
 // static
 util::Status Builder::CompileCharsMap(const CharsMap &chars_map,
                                       std::string *output) {
@@ -289,6 +298,14 @@ util::Status Builder::GetPrecompiledCharsMap(const std::string &name,
          << "No precompiled charsmap is found: " << name;
 }
 
+// DOC:
+// 链接NFKC映射键值表
+//
+// 参数:
+//      chars_map -- 映射键值表
+//
+// 返回:
+//      链接状态
 // static
 util::Status Builder::BuildNFKCMap(CharsMap *chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
@@ -348,6 +365,14 @@ util::Status Builder::BuildNFKCMap(CharsMap *chars_map) {
   return util::OkStatus();
 }
 
+// DOC:
+// 链接Nmt NFKC字符映射键值表。
+//
+// 参数:
+//      chars_map -- 字符映射键值表
+//
+// 返回:
+//      链接状态。
 util::Status Builder::BuildNmtNFKCMap(CharsMap *chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   LOG(INFO) << "Running BuildNmtNFKCMap";
@@ -422,6 +447,14 @@ util::Status Builder::BuildNmtNFKCMap(CharsMap *chars_map) {
   return util::OkStatus();
 }
 
+// DOC:
+// 合并Unicode大小写折叠到`chars_map`。
+//
+// 参数:
+//        chars_map -- 字符映射键值表
+//
+// 返回:
+//        合并状态。
 // static
 util::Status Builder::MergeUnicodeCaseFoldMap(Builder::CharsMap *chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
@@ -447,6 +480,14 @@ util::Status Builder::MergeUnicodeCaseFoldMap(Builder::CharsMap *chars_map) {
   return util::OkStatus();
 }
 
+// DOC:
+// 根据Unicode大小写折叠创建NFKC字符映射键值表。
+//
+// 参数:
+//        chars_map -- 字符映射键值表
+//
+// 返回:
+//        创建状态。
 // static
 util::Status Builder::BuildNFKC_CFMap(CharsMap *chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
@@ -462,6 +503,14 @@ util::Status Builder::BuildNFKC_CFMap(CharsMap *chars_map) {
   return util::OkStatus();
 }
 
+// DOC:
+// 根据Unicode大小写折叠创建Nmt NFKC字符映射键值表
+//
+// 参数:
+//        chars_map -- 字符映射键值表
+//
+// 返回:
+//        创建状态。
 //  static
 util::Status Builder::BuildNmtNFKC_CFMap(CharsMap *chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
@@ -477,6 +526,15 @@ util::Status Builder::BuildNmtNFKC_CFMap(CharsMap *chars_map) {
   return util::OkStatus();
 }
 
+// DOC:
+// 从文件中载入字符映射键值表。
+//
+// 参数:
+//        filename -- 源文件路径
+//        chars_map -- 用于保存字符映射键值表
+//
+// 返回:
+//        载入状态。
 // static
 util::Status Builder::LoadCharsMap(absl::string_view filename,
                                    CharsMap *chars_map) {
@@ -511,6 +569,15 @@ util::Status Builder::LoadCharsMap(absl::string_view filename,
   return util::OkStatus();
 }
 
+// DOC:
+// 保存字符映射键值表到tsv文件。
+//
+// 参数:
+//        filename -- 保存文件路径
+//        chars_map -- 字符映射键值表
+//
+// 返回:
+//        保存状态。
 // static
 util::Status Builder::SaveCharsMap(absl::string_view filename,
                                    const Builder::CharsMap &chars_map) {
@@ -543,6 +610,14 @@ util::Status Builder::SaveCharsMap(absl::string_view filename,
   return util::OkStatus();
 }
 
+// DOC:
+// 移除字符映射键值表中的冗余规则。
+//
+// 参数:
+//        chars_map -- 字符映射键值表
+//
+// 返回:
+//        移除状态。
 // static
 util::Status Builder::RemoveRedundantMap(CharsMap *chars_map) {
   CHECK_OR_RETURN(chars_map);
