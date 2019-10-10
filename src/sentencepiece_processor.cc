@@ -42,9 +42,14 @@ const char kDefaultUnknownSymbol[] = " \xE2\x81\x87 ";
 SentencePieceProcessor::SentencePieceProcessor() {}
 SentencePieceProcessor::~SentencePieceProcessor() {}
 
+// DOC:
 // 加载文件函数，根据文件路径读取加载文件
-// 参数： filename -- min_string_view 类型的文件
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      filename -- min_string_view 类型的文件
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Load(util::min_string_view filename) {
   auto input = filesystem::NewReadableFile(string_util::ToSV(filename), true);
   RETURN_IF_ERROR(input->status());
@@ -53,33 +58,48 @@ util::Status SentencePieceProcessor::Load(util::min_string_view filename) {
   return LoadFromSerializedProto(proto);
 }
 
+// DOC:
 // 对加载文件是否成功调用宏函数进行检测，若加载文件失败则进入Die环节
-// 参数： filename -- min_string_view 类型的文件
+// 参数：
+//      filename -- min_string_view 类型的文件
 void SentencePieceProcessor::LoadOrDie(util::min_string_view filename) {
   CHECK_OK(Load(filename));
 }
 
+// DOC:
 // 加载文件函数，根据文件路径读取加载文件
-// 参数： is -- istream 类型的文件指针
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      is -- istream 类型的文件指针
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Load(std::istream *is) {
   return util::StatusBuilder(util::error::UNIMPLEMENTED)
          << "std::stream API is deprecated. Use LoadFromSerializedProto() "
          << "to load model from any serialized blob object.";
 }
 
+// DOC:
 // 加载文件函数，根据文件路径读取加载文件
-// 参数： model_proto -- ModelProto 类型的文件引用
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      model_proto -- ModelProto 类型的文件引用
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Load(const ModelProto &model_proto) {
   auto model_proto_copy = port::MakeUnique<ModelProto>();
   *model_proto_copy = model_proto;
   return Load(std::move(model_proto_copy));
 }
 
+// DOC:
 // 加载文件函数，根据文件路径读取加载文件
-// 参数： serialized -- min_string_view 类型的序列化文件
-// 返回：util::Status 类型的状态信息
+// 参数：
+//      serialized -- min_string_view 类型的序列化文件
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::LoadFromSerializedProto(
     util::min_string_view serialized) {
   auto model_proto = port::MakeUnique<ModelProto>();
@@ -88,9 +108,14 @@ util::Status SentencePieceProcessor::LoadFromSerializedProto(
   return Load(std::move(model_proto));
 }
 
+// DOC:
 // 加载文件函数，根据文件路径读取加载文件
-// 参数： model_proto -- unique_ptr 指针引用文件
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      model_proto -- unique_ptr 指针引用文件
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Load(
     std::unique_ptr<ModelProto> &&model_proto) {
   model_proto_ = std::move(model_proto);
@@ -99,6 +124,7 @@ util::Status SentencePieceProcessor::Load(
       model_proto_->normalizer_spec(), model_proto_->trainer_spec());
 
   // Escapes user-defined-symbols in normalizer.
+  // DOC:
   // 调用 normalizer 模块的前缀匹配设置
   normalizer_->SetPrefixMatcher(model_->prefix_matcher());
 
@@ -106,6 +132,7 @@ util::Status SentencePieceProcessor::Load(
 
   // Running self-testing.
   std::vector<std::string> errors, sps;
+  // DOC:
   // 测试模块，在 for 循环体内进行测试，如输出符合预期无失误则继续
   for (const auto &s : model_proto_->self_test_data().samples()) {
     RETURN_IF_ERROR(Encode(s.input(), &sps));
@@ -129,23 +156,34 @@ util::Status SentencePieceProcessor::Load(
   return util::OkStatus();
 }
 
+// DOC:
 // 加载编码额外选项
-// 参数： extra_option -- min_string_view 类型的设置
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      extra_option -- min_string_view 类型的设置
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SetEncodeExtraOptions(
     util::min_string_view extra_options) {
   return ParseExtraOptions(extra_options, &encode_extra_options_);
 }
 
+// DOC:
 // 加载解码额外选项
-// 参数： extra_option -- min_string_view 类型的设置
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      extra_option -- min_string_view 类型的设置
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SetDecodeExtraOptions(
     util::min_string_view extra_options) {
   return ParseExtraOptions(extra_options, &decode_extra_options_);
 }
 
-//对model和规范化器的配置进行检测
+// DOC:
+// 对model和规范化器的配置进行检测
 util::Status SentencePieceProcessor::status() const {
   CHECK_OR_RETURN(model_) << "Model is not initialized.";
   CHECK_OR_RETURN(normalizer_) << "Normalizer is not initialized.";
@@ -154,9 +192,14 @@ util::Status SentencePieceProcessor::status() const {
   return util::OkStatus();
 }
 
+// DOC:
 // 设置语料库内容
-// 参数： valid_vocab -- string 向量类型的语料
-// 返回：util::Status 类型的状态信息
+//
+// 参数：
+//      valid_vocab -- string 向量类型的语料
+//
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SetVocabulary(
     const std::vector<std::string> &valid_vocab) {
   RETURN_IF_ERROR(status());
@@ -187,8 +230,10 @@ util::Status SentencePieceProcessor::SetVocabulary(
   return util::OkStatus();
 }
 
+// DOC:
 // 重置语料库为初始值
-// 返回：util::Status 类型的状态信息
+// 返回：
+//      util::Status 类型的状态信息
 util::Status SentencePieceProcessor::ResetVocabulary() {
   RETURN_IF_ERROR(status());
   for (auto &piece : *(model_proto_->mutable_pieces())) {
@@ -199,10 +244,15 @@ util::Status SentencePieceProcessor::ResetVocabulary() {
   return util::OkStatus();
 }
 
+// DOC:
 // 通过文件名加载语料库
-// 参数： filename -- min_string_view 类型的语料库文件名
+//
+// 参数：
+//              filename -- min_string_view 类型的语料库文件名
 //             threshold -- 整数类型的阈值设置
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//          util::Status 类型的状态信息
 util::Status SentencePieceProcessor::LoadVocabulary(
     util::min_string_view filename, int threshold) {
   auto input = filesystem::NewReadableFile(string_util::ToSV(filename));
@@ -235,10 +285,15 @@ util::Status SentencePieceProcessor::LoadVocabulary(
 
 //////////////////////////////////////////////////////////////
 // Simple API.
+// DOC:
 // 对内容进行编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             pieces -- 字符串类型的向量指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Encode(
     util::min_string_view input, std::vector<std::string> *pieces) const {
   CHECK_OR_RETURN_STATUS_STL(pieces);
@@ -252,10 +307,15 @@ util::Status SentencePieceProcessor::Encode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             ids -- 整型类型的向量指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Encode(util::min_string_view input,
                                             std::vector<int> *ids) const {
   CHECK_OR_RETURN_STATUS_STL(ids);
@@ -269,10 +329,15 @@ util::Status SentencePieceProcessor::Encode(util::min_string_view input,
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行解码的函数
-// 参数：detokenized -- 字符串类型的逆词法分析指针
+//
+// 参数：
+//              detokenized -- 字符串类型的逆词法分析指针
 //             pieces -- 字符串类型的向量引用
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Decode(
     const std::vector<std::string> &pieces, std::string *detokenized) const {
   CHECK_OR_RETURN_STATUS_STL(detokenized);
@@ -284,10 +349,15 @@ util::Status SentencePieceProcessor::Decode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行解码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             ids -- 整型类型的向量引用
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Decode(const std::vector<int> &ids,
                                             std::string *detokenized) const {
   CHECK_OR_RETURN_STATUS_STL(detokenized);
@@ -299,11 +369,16 @@ util::Status SentencePieceProcessor::Decode(const std::vector<int> &ids,
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行N-Best的N个最好结果编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的结果数目
 //             pieces -- 字符串类型的向量指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::NBestEncode(
     util::min_string_view input, int nbest_size,
     std::vector<std::vector<std::string>> *pieces) const {
@@ -322,11 +397,16 @@ util::Status SentencePieceProcessor::NBestEncode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行N-Best的N个最好结果编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的结果数目
 //             ids -- 整型类型的向量指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::NBestEncode(
     util::min_string_view input, int nbest_size,
     std::vector<std::vector<int>> *ids) const {
@@ -345,12 +425,17 @@ util::Status SentencePieceProcessor::NBestEncode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行样本编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的结果数目
 //             pieces -- 字符串类型的向量指针
 //             alpha -- 浮点类型的配置数值
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SampleEncode(
     util::min_string_view input, int nbest_size, float alpha,
     std::vector<std::string> *pieces) const {
@@ -365,12 +450,17 @@ util::Status SentencePieceProcessor::SampleEncode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行样本编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的结果数目
 //             ids -- 整型类型的向量指针
 //             alpha -- 浮点类型的配置数值
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SampleEncode(util::min_string_view input,
                                                   int nbest_size, float alpha,
                                                   std::vector<int> *ids) const {
@@ -386,11 +476,15 @@ util::Status SentencePieceProcessor::SampleEncode(util::min_string_view input,
 }
 
 // 对SentencePiece文本进行储存
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             normalized -- min_string_view 类型的规范化字符串
 //             norm_to_orig -- size_t 类型的转换字节数占用
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::PopulateSentencePieceText(
     util::min_string_view input, util::min_string_view normalized,
     const std::vector<size_t> &norm_to_orig, const EncodeResult &result,
@@ -456,10 +550,15 @@ util::Status SentencePieceProcessor::PopulateSentencePieceText(
   return util::OkStatus();
 }  // namespace sentencepiece
 
+// DOC:
 // 对内容进行编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Encode(util::min_string_view input,
                                             SentencePieceText *spt) const {
   CHECK_OR_RETURN_STATUS_PROTO(spt);
@@ -476,11 +575,16 @@ util::Status SentencePieceProcessor::Encode(util::min_string_view input,
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行N-Best编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的最好结果数目
 //             nbest_spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::NBestEncode(
     util::min_string_view input, int nbest_size,
     NBestSentencePieceText *nbest_spt) const {
@@ -504,12 +608,17 @@ util::Status SentencePieceProcessor::NBestEncode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行样本t编码的函数
-// 参数：input -- min_string_view 类型的原字符串内容
+//
+// 参数：
+//              input -- min_string_view 类型的原字符串内容
 //             nbest_size -- 整型类型的最好结果数目
 //             alpha -- 浮点类型的设置数值
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::SampleEncode(
     util::min_string_view input, int nbest_size, float alpha,
     SentencePieceText *spt) const {
@@ -549,10 +658,15 @@ util::Status SentencePieceProcessor::SampleEncode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行解码的函数
-// 参数：pieces -- 字符串类型的向量引用
+//
+// 参数：
+//              pieces -- 字符串类型的向量引用
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Decode(
     const std::vector<std::string> &pieces, SentencePieceText *spt) const {
   CHECK_OR_RETURN_STATUS_PROTO(spt);
@@ -601,10 +715,14 @@ util::Status SentencePieceProcessor::Decode(
   return util::OkStatus();
 }
 
+// DOC:
 // 对内容进行解码的函数
-// 参数：ids -- 整型类型的向量引用
+//
+// 参数：
+//              ids -- 整型类型的向量引用
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::Decode(const std::vector<int> &ids,
                                             SentencePieceText *spt) const {
   std::vector<std::string> pieces;
@@ -614,9 +732,14 @@ util::Status SentencePieceProcessor::Decode(const std::vector<int> &ids,
   return Decode(pieces, spt);
 }
 
+// DOC:
 // 以序列化原型形式对内容进行编码的函数
-// 参数：input -- min_string_view 类型的原文件内容
-// 返回：util::bytes 类型的输出字符串信息
+//
+// 参数：
+//          input -- min_string_view 类型的原文件内容
+//
+// 返回：
+//          util::bytes 类型的输出字符串信息
 util::bytes SentencePieceProcessor::EncodeAsSerializedProto(
     util::min_string_view input) const {
   SentencePieceText spt;
@@ -624,11 +747,16 @@ util::bytes SentencePieceProcessor::EncodeAsSerializedProto(
   return spt.SerializeAsString();
 }
 
+// DOC:
 // 以序列化原型形式对内容进行样本编码的函数
-// 参数：input -- min_string_view 类型的原文件内容
+//
+// 参数：
+//              input -- min_string_view 类型的原文件内容
 //           alpha -- 浮点类型的配置数值
 //           nbest_size -- 整型最好结果数目
-// 返回：util::bytes 类型的输出字符串信息
+//
+// 返回：
+//          util::bytes 类型的输出字符串信息
 util::bytes SentencePieceProcessor::SampleEncodeAsSerializedProto(
     util::min_string_view input, int nbest_size, float alpha) const {
   SentencePieceText spt;
@@ -636,10 +764,15 @@ util::bytes SentencePieceProcessor::SampleEncodeAsSerializedProto(
   return spt.SerializeAsString();
 }
 
+// DOC:
 // 以序列化原型形式对内容进行N-best编码的函数
-// 参数：input -- min_string_view 类型的原文件内容
+//
+// 参数：
+//          input -- min_string_view 类型的原文件内容
 //           nbest_size -- 整型最好结果数目
-// 返回：util::bytes 类型的输出字符串信息
+//
+// 返回：
+//          util::bytes 类型的输出字符串信息
 util::bytes SentencePieceProcessor::NBestEncodeAsSerializedProto(
     util::min_string_view input, int nbest_size) const {
   NBestSentencePieceText spt;
@@ -647,9 +780,14 @@ util::bytes SentencePieceProcessor::NBestEncodeAsSerializedProto(
   return spt.SerializeAsString();
 }
 
+// DOC:
 // 以序列化原型形式对内容进行解码的函数
-// 参数：pieces -- 字符串向量类型的字符串内容
-// 返回：util::bytes 类型的输出字符串信息
+//
+// 参数：
+//      pieces -- 字符串向量类型的字符串内容
+//
+// 返回：
+//      util::bytes 类型的输出字符串信息
 util::bytes SentencePieceProcessor::DecodePiecesAsSerializedProto(
     const std::vector<std::string> &pieces) const {
   SentencePieceText spt;
@@ -657,9 +795,14 @@ util::bytes SentencePieceProcessor::DecodePiecesAsSerializedProto(
   return spt.SerializeAsString();
 }
 
+// DOC:
 // 以序列化原型形式对内容进行解码的函数
-// 参数：ids -- 整型向量类型的引用
-// 返回：util::bytes 类型的输出字符串信息
+//
+// 参数：
+//      ids -- 整型向量类型的引用
+//
+// 返回：
+//      util::bytes 类型的输出字符串信息
 util::bytes SentencePieceProcessor::DecodeIdsAsSerializedProto(
     const std::vector<int> &ids) const {
   SentencePieceText spt;
@@ -667,6 +810,7 @@ util::bytes SentencePieceProcessor::DecodeIdsAsSerializedProto(
   return spt.SerializeAsString();
 }
 
+// DOC:
 // 使用宏函数检验状态是否返回默认值
 #define CHECK_STATUS_OR_RETURN_DEFAULT(value)                            \
   if (!status().ok()) {                                                  \
@@ -675,57 +819,90 @@ util::bytes SentencePieceProcessor::DecodeIdsAsSerializedProto(
     return value;                                                        \
   }
 
+// DOC:
 // 获取 Piece 的大小数据
-// 返回：int 类型的 Piece 大小
+//
+// 返回：
+//      int 类型的 Piece 大小
 int SentencePieceProcessor::GetPieceSize() const {
   CHECK_STATUS_OR_RETURN_DEFAULT(0);
   return model_->GetPieceSize();
 }
 
+// DOC:
 // 获取指定 piece 的 PieceTold
-// 参数：piece -- min_string_view 类型的原文件内容
-// 返回：int 类型的 Piece 数据
+//
+// 参数：
+//      piece -- min_string_view 类型的原文件内容
+//
+// 返回：
+//      int 类型的 Piece 数据
 int SentencePieceProcessor::PieceToId(util::min_string_view piece) const {
   CHECK_STATUS_OR_RETURN_DEFAULT(0);
   return model_->PieceToId(string_util::ToSV(piece));
 }
 
+// DOC:
 // 获取指定 id 的对应 piece 字符串内容
-// 参数：id -- 整型类型的待获取内容编码
-// 返回：字符串类型的 id 对应引用
+//
+// 参数：
+//      id -- 整型类型的待获取内容编码
+//
+// 返回：
+//      字符串类型的 id 对应引用
 const std::string &SentencePieceProcessor::IdToPiece(int id) const {
   static const std::string *kEmptyString = new std::string;
   CHECK_STATUS_OR_RETURN_DEFAULT(*kEmptyString);
   return model_->IdToPiece(id);
 }
 
+// DOC:
 // 获取指定 id 的对应分数
-// 参数：id -- 整型类型的待获取内容编码
-// 返回：浮点类型的 id 对应分数
+//
+// 参数：
+//      id -- 整型类型的待获取内容编码
+//
+// 返回：
+//      浮点类型的 id 对应分数
 float SentencePieceProcessor::GetScore(int id) const {
   CHECK_STATUS_OR_RETURN_DEFAULT(0.0);
   return model_->GetScore(id);
 }
 
+// DOC:
 // 获取指定 id 是否为控制符
-// 参数：id -- 整型类型的待获取内容编码
-// 返回：布尔类型的控制符判断
+//
+// 参数：
+//      id -- 整型类型的待获取内容编码
+//
+// 返回：
+//      布尔类型的控制符判断
 bool SentencePieceProcessor::IsControl(int id) const {
   CHECK_STATUS_OR_RETURN_DEFAULT(0);
   return model_->IsControl(id);
 }
 
+// DOC:
 // 获取指定 id 是否为未知
-// 参数：id -- 整型类型的待获取内容编码
-// 返回：布尔类型的是否未知判断
+//
+// 参数：
+//      id -- 整型类型的待获取内容编码
+//
+// 返回：
+//      布尔类型的是否未知判断
 bool SentencePieceProcessor::IsUnknown(int id) const {
   CHECK_STATUS_OR_RETURN_DEFAULT(0);
   return model_->IsUnknown(id);
 }
 
+// DOC:
 // 获取指定 id 是否未被使用
-// 参数：id -- 整型类型的待获取内容编码
-// 返回：布尔类型的id是否未被使用
+//
+// 参数：
+//      id -- 整型类型的待获取内容编码
+//
+// 返回：
+//      布尔类型的id是否未被使用
 bool SentencePieceProcessor::IsUnused(int id) const {
   CHECK_STATUS_OR_RETURN_DEFAULT(false);
   return model_->IsUnused(id);
@@ -756,10 +933,15 @@ int SentencePieceProcessor::pad_id() const {
 }
 
 // static
+// DOC:
 // 对额外设置进行应用的函数
-// 参数：extra_options -- 额外设置类型的向量信息
+//
+// 参数：
+//             extra_options -- 额外设置类型的向量信息
 //             spt -- SentencePieceText 类型的文本指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::ApplyExtraOptions(
     const std::vector<ExtraOption> &extra_options,
     SentencePieceText *spt) const {
@@ -797,10 +979,15 @@ util::Status SentencePieceProcessor::ApplyExtraOptions(
 }
 
 // static
+// DOC:
 // 对额外设置信息进行解包的函数
-// 参数：_extra_option -- min_string_view 类型的额外设置信息
+//
+// 参数：
+//              _extra_option -- min_string_view 类型的额外设置信息
 //             extra_options -- 解包后待存放入的 ExtraOption 类型向量指针
-// 返回：util::Status 类型的状态信息
+//
+// 返回：
+//              util::Status 类型的状态信息
 util::Status SentencePieceProcessor::ParseExtraOptions(
     util::min_string_view _extra_option,
     std::vector<SentencePieceProcessor::ExtraOption> *extra_options) const {
@@ -835,21 +1022,30 @@ util::Status SentencePieceProcessor::ParseExtraOptions(
   return util::OkStatus();
 }
 
+// DOC:
 // 设置模型的函数
-// 参数：model -- 实现了Model接口的多态类型指针集合
+//
+// 参数：
+//      model -- 实现了Model接口的多态类型指针集合
 void SentencePieceProcessor::SetModel(std::unique_ptr<ModelInterface> &&model) {
   model_ = std::move(model);
 }
 
+// DOC:
 // 设置规范化器
-// 参数：normalizer -- Normalizer类型指针集合
+//
+// 参数：
+//      normalizer -- Normalizer类型指针集合
 void SentencePieceProcessor::SetNormalizer(
     std::unique_ptr<normalizer::Normalizer> &&normalizer) {
   normalizer_ = std::move(normalizer);
 }
 
+// DOC:
 // 获取模型原型
-// 返回：模型原型类型的模型原型数据
+//
+// 返回：
+//      模型原型类型的模型原型数据
 const ModelProto &SentencePieceProcessor::model_proto() const {
   return *model_proto_;
 }

@@ -34,6 +34,7 @@ using port::MakeUnique;
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// DOC:
 // 实现了模型接口的虚拟测试模型类
 class MockModel : public ModelInterface {
  public:
@@ -83,6 +84,7 @@ class MockModel : public ModelInterface {
   const std::string kEmptyString;
 };
 
+// DOC:
 // 接受编码结果类型参数，设置SentencePiece向量
 std::vector<std::string> GetSpVec(const EncodeResult &pieces) {
   std::vector<std::string> sps;
@@ -92,6 +94,7 @@ std::vector<std::string> GetSpVec(const EncodeResult &pieces) {
   return sps;
 }
 
+// DOC:
 // 接受编码结果类型参数，设置SentencePiece id 向量
 std::vector<int> GetIdVec(const EncodeResult &pieces) {
   std::vector<int> ids;
@@ -101,6 +104,7 @@ std::vector<int> GetIdVec(const EncodeResult &pieces) {
   return ids;
 }
 
+// DOC:
 // 接受SentencePieceTest类型参数，设置SentencePiece向量
 std::vector<std::string> GetSpVec(const SentencePieceText &spt) {
   std::vector<std::string> sps;
@@ -599,6 +603,7 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
   }
 }
 
+// DOC:
 // 接受模型原型类型的原型指针，string_view类型的piece和浮点分数的向原型中加入piece的函数
 void AddPiece(ModelProto *model_proto, absl::string_view piece,
               float score = 0.0) {
