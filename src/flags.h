@@ -23,15 +23,15 @@ namespace sentencepiece {
 namespace flags {
 
 // DOC:
-// 匿名枚举，用于表示6种数据类型，包括int，bool，int64, uint64, double, std::string。
+// 匿名枚举，用于表示 6 种数据类型，包括 int，bool，int64, uint64, double, std::string。
 enum { I, B, I64, U64, D, S };
 
 // DOC:
-// 结构体Flag，用于保存模型参数
+// 结构体 Flag，用于保存模型参数
 struct Flag;
 
 // DOC:
-// 用于构造Flag。
+// 用于构造 Flag。
 // Example:
 //      std::string storage = "storage";
 //      std::string default_storage = "default_storage";
@@ -49,16 +49,16 @@ class FlagRegister {
 };
 
 // DOC:
-// 返回一个字符串，描述了sentencepiece的命令行参数用法。
+// 返回一个字符串，描述了 sentencepiece 的命令行参数用法。
 //
 // 参数:
 //      programname -- 程序名，用于表示程序的名称
 // 返回:
-//      一个描述了sentencepiece的命令行参数用法的字符串。
+//      一个描述了 sentencepiece 的命令行参数用法的字符串
 std::string PrintHelp(const char *programname);
 
 // DOC:
-// 解析命令行参数并修改对应Flag。
+// 解析命令行参数并修改对应 Flag
 //
 // 参数:
 //      argc -- 传入命令行参数个数
@@ -70,14 +70,14 @@ void ParseCommandLineFlags(int argc, char **argv,
 }  // namespace sentencepiece
 
 // DOC:
-// 定义Flag变量及对应命名空间，并使用该命名空间。
+// 定义Flag变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
-//      value -- Flag的值
-//      help -- Flag的说明
+//      type -- Flag 值的类型
+//      shorttype -- Flag值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
+//      value -- Flag 的值
+//      help -- Flag 的说明
 #define DEFINE_VARIABLE(type, shorttype, name, value, help)               \
   namespace sentencepiece_flags_fL##shorttype {                           \
     using namespace sentencepiece::flags;                                 \
@@ -91,12 +91,12 @@ void ParseCommandLineFlags(int argc, char **argv,
   using sentencepiece_flags_fL##shorttype::FLAGS_##name
 
 // DOC: （未被使用！！！)
-// 声明Flag变量及对应命名空间，并使用该命名空间。
+// 声明 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      type -- Flag 值的类型
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DECLARE_VARIABLE(type, shorttype, name) \
   namespace sentencepiece_flags_fL##shorttype { \
     extern type FLAGS_##name;                   \
@@ -104,112 +104,112 @@ void ParseCommandLineFlags(int argc, char **argv,
   using sentencepiece_flags_fL##shorttype::FLAGS_##name
 
 // DOC:
-// 定义int32类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 int32 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      type -- Flag 值的类型
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DEFINE_int32(name, value, help) \
   DEFINE_VARIABLE(int32, I, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义int32类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 int32 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_int32(name) DECLARE_VARIABLE(int32, I, name)
 
 // DOC: (未被使用！！！)
-// 定义int64类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 int64 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      type -- Flag 值的类型
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DEFINE_int64(name, value, help) \
   DEFINE_VARIABLE(int64, I64, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义int64类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 int64 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_int64(name) DECLARE_VARIABLE(int64, I64, name)
 
 // DOC: (未被使用！！！)
-// 定义uint64类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 uint64 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      type -- Flag 值的类型
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DEFINE_uint64(name, value, help) \
   DEFINE_VARIABLE(uint64, U64, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义uint64类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 uint64 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_uint64(name) DECLARE_VARIABLE(uint64, U64, name)
 
 // DOC:
-// 定义double类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 double 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
 //      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DEFINE_double(name, value, help) \
   DEFINE_VARIABLE(double, D, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义double类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 double 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_double(name) DECLARE_VARIABLE(double, D, name)
 
 // DOC:
-// 定义bool类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义bool类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
 //      type -- Flag值的类型
 //      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DEFINE_bool(name, value, help) \
   DEFINE_VARIABLE(bool, B, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义bool类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义bool类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_bool(name) DECLARE_VARIABLE(bool, B, name)
 
 // DOC:
-// 定义std::string类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义std::string类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      type -- Flag值的类型
-//      shorttype -- Flag值的类型在sentencepiece::flags的匿名函数中对应的值
-//      name -- Flag的名称
+//      type -- Flag 值的类型
+//      shorttype -- Flag 值的类型在 sentencepiece::flags 的匿名函数中对应的值
+//      name -- Flag 的名称
 #define DEFINE_string(name, value, help) \
   DEFINE_VARIABLE(std::string, S, name, value, help)
 
 // DOC: (未被使用！！！)
-// 定义std::string类型的Flag变量及对应命名空间，并使用该命名空间。
+// 定义 std::string 类型的 Flag 变量及对应命名空间，并使用该命名空间
 //
 // 参数:
-//      name -- Flag的名称
+//      name -- Flag 的名称
 #define DECLARE_string(name) DECLARE_VARIABLE(std::string, S, name)
 
 // DOC:
-// 检测flag是否为空，为空则打印错误和帮助信息到控制台并退出。
+// 检测 flag 是否为空，为空则打印错误和帮助信息到控制台并退出
 //
 // 参数:
-//      flag -- flag变量
+//      flag -- flag 变量
 #define CHECK_OR_HELP(flag)                                        \
   if (FLAGS_##flag.empty()) {                                      \
     std::cout << "ERROR: --" << #flag << " must not be empty\n\n"; \

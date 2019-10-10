@@ -28,11 +28,11 @@ namespace character {
 namespace {
 
 // Space symbol (U+2581)
-// DOC: 空格宏定义
+// DOC: 空格 Unicode 编码宏定义
 #define WS "\xe2\x96\x81"
 
 // DOC:
-// 启动训练器 函数
+// 训练器执行函数
 //
 // 参数:
 //		input -- 输入文本

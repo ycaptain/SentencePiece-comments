@@ -29,7 +29,7 @@ namespace character {
 namespace {
 
 // Space symbol (U+2581)
-// DOC: 空格宏定义
+// DOC: 空格 Unicode 编码宏定义
 #define WS "\xe2\x96\x81"
 
 // DOC:
@@ -54,11 +54,11 @@ ModelProto MakeBaseModelProto() {
 }
 
 // DOC:
-// 为模型原型增加文本块 (Piece) 函数
+// 模型语料添加函数
 //
 // 参数:
 //		model_proto -- 目标模型原型指针
-//		piece -- 增加的文本块 (piece)
+//		piece -- 增加的语料
 //		score -- 模型分数（参考BLEU SCORE），默认值为0.0
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
@@ -70,7 +70,7 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
 TEST(ModelTest, EncodeTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
-// DOC: 向模型原型增加文本块 " abcABC"
+// DOC: 向模型原型增加特定语料
   AddPiece(&model_proto, WS, 0.0);
   AddPiece(&model_proto, "a", 0.1);
   AddPiece(&model_proto, "b", 0.2);

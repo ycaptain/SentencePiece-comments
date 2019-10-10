@@ -15,9 +15,12 @@
 #include "word_model.h"
 #include "util.h"
 
+// 命名空间 sentencepiece
 namespace sentencepiece {
 namespace word {
 
+// 定义一个以 model_proto 为参数的分词模型
+// 并初始化分词工具
 Model::Model(const ModelProto &model_proto) {
   model_proto_ = &model_proto;
   InitializePieces();
@@ -25,6 +28,8 @@ Model::Model(const ModelProto &model_proto) {
 
 Model::~Model() {}
 
+// 对已经规范化的字符串 normalized 进行编码，并返回编码后的结果
+// 若字符串 normalized 为空或者状态异常，则直接返回空。否则进行编码并输出
 EncodeResult Model::Encode(absl::string_view normalized) const {
   if (!status().ok() || normalized.empty()) {
     return {};

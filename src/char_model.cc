@@ -33,7 +33,7 @@ Model::Model(const ModelProto &model_proto) {
 Model::~Model() {}
 
 // DOC:
-// 为 normalized 文本(string_view) 编码函数
+// 为 normalized 文本 (string_view) 编码函数
 // 
 // 参数:
 //		normalized -- 欲编码 normalized 文本

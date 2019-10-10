@@ -22,13 +22,17 @@
 #include "testharness.h"
 #include "util.h"
 
+// DOC: 命名空间 sentencepiece
 namespace sentencepiece {
+// DOC: 命名空间 sentencepiece::word
 namespace word {
 namespace {
 
 // Space symbol (U+2581)
+// DOC: 定义空格 Unicode 编码
 #define WS "\xe2\x96\x81"
 
+// 定义一个创建模型原型的方法
 ModelProto MakeBaseModelProto() {
   ModelProto model_proto;
   auto *sp1 = model_proto.add_pieces();
@@ -45,6 +49,7 @@ ModelProto MakeBaseModelProto() {
   return model_proto;
 }
 
+// 定义一个向模型原型中添加带有权重 score 的语句片段 piece 的方法
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -52,6 +57,7 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
   sp->set_score(score);
 }
 
+//对 word 模型进行编码测试
 TEST(WordModelTest, EncodeTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -83,6 +89,7 @@ TEST(WordModelTest, EncodeTest) {
   EXPECT_EQ(WS "abc", result[2].first);
 }
 
+// 对 word 模型进行不支持的编码测试
 TEST(WordModelTest, NotSupportedTest) {
   ModelProto model_proto = MakeBaseModelProto();
   const Model model(model_proto);

@@ -28,6 +28,7 @@
 #include "config.h"
 #include "flags.h"
 
+// DOC: Windows / Unix 环境判断
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define OS_WIN
 #else
@@ -41,6 +42,7 @@
 #include <windows.h>
 #endif
 
+// DOC: 常用数据类型扩展
 typedef int8_t int8;
 typedef int16_t int16;
 typedef int32_t int32;
@@ -51,6 +53,7 @@ typedef uint32_t char32;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
 
+// 各数据类型最小最大值定义
 static constexpr uint8 kuint8max = ((uint8)0xFF);
 static constexpr uint16 kuint16max = ((uint16)0xFFFF);
 static constexpr uint32 kuint32max = ((uint32)0xFFFFFFFF);
@@ -66,6 +69,7 @@ static constexpr int64 kint64max = ((int64)(0x7FFFFFFFFFFFFFFF));
 
 static constexpr uint32 kUnicodeError = 0xFFFD;
 
+// DOC: 自适应宽字符编码
 #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
 #define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
 #else
@@ -82,19 +86,23 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 
 #define arraysize(array) (sizeof(ArraySizeHelper(array)))
 
+// DOC: 命名空间 sentencepiece
 namespace sentencepiece {
 #ifdef OS_WIN
+// DOC: 命名空间 win32
 namespace win32 {
 std::wstring Utf8ToWide(const std::string &input);
 std::string WideToUtf8(const std::wstring &input);
 }  // namespace win32
 #endif
 
+// DOC: 命名空间 flags
 namespace flags {
 int GetMinLogLevel();
 void SetMinLogLevel(int minloglevel);
 }  // namespace flags
 
+// DOC: 命名空间 error
 namespace error {
 
 void Abort();
@@ -103,6 +111,7 @@ void SetTestCounter(int c);
 void ResetTestMode();
 bool GetTestCounter();
 
+// DOC: 程序终止类定义
 class Die {
  public:
   explicit Die(bool die) : die_(die) {}
@@ -118,6 +127,7 @@ class Die {
   bool die_;
 };
 
+// DOC: 非空值测试
 template <typename T>
 T &&CheckNotNull(const char *file, int line, const char *exprtext, T &&t) {
   if (t == nullptr) {
@@ -128,7 +138,9 @@ T &&CheckNotNull(const char *file, int line, const char *exprtext, T &&t) {
 }
 }  // namespace error
 
+// DOC: 命名空间 logging
 namespace logging {
+// DOC: 日志级别枚举定义
 enum LogSeverity {
   LOG_INFO = 0,
   LOG_WARNING = 1,
@@ -137,6 +149,7 @@ enum LogSeverity {
   LOG_SEVERITY_SIZE = 4,
 };
 
+// DOC: 获取指定路径 path 对应的目录名
 inline const char *BaseName(const char *path) {
 #ifdef OS_WIN
   const char *p = strrchr(path, '\\');
@@ -149,6 +162,7 @@ inline const char *BaseName(const char *path) {
 }  // namespace logging
 }  // namespace sentencepiece
 
+// DOC: 全局日志记录方法
 #define LOG(severity)                                                        \
   (sentencepiece::flags::GetMinLogLevel() >                                  \
    ::sentencepiece::logging::LOG_##severity)                                 \
@@ -160,6 +174,7 @@ inline const char *BaseName(const char *path) {
                       << __LINE__ << ") "                                    \
                       << "LOG(" << #severity << ") "
 
+// DOC: 全局测试方法
 #define CHECK(condition)                                                      \
   (condition) ? 0                                                             \
               : ::sentencepiece::error::Die(true) &                           \
@@ -167,6 +182,7 @@ inline const char *BaseName(const char *path) {
                               << "(" << __LINE__ << ") [" << #condition       \
                               << "] "
 
+// DOC: 全局测试值判断逻辑
 #define CHECK_STREQ(a, b) CHECK_EQ(std::string(a), std::string(b))
 #define CHECK_EQ(a, b) CHECK((a) == (b))
 #define CHECK_NE(a, b) CHECK((a) != (b))
@@ -179,6 +195,7 @@ inline const char *BaseName(const char *path) {
       ::sentencepiece::logging::BaseName(__FILE__), __LINE__, \
       "'" #val "' Must be non NULL", (val))
 
+// DOC: 全局友元类测试
 #define FRIEND_TEST(a, b) friend class a##_Test_##b;
 
 #define CHECK_OK(expr)                         \

@@ -194,7 +194,7 @@ TEST(UtilTest, JoinTest) {
   EXPECT_EQ(string_util::Join(tokens, " "), "this is  test");
 }
 
-// DOC: 整形书语料合并功能测试
+// DOC: 整形数语料合并功能测试
 TEST(UtilTest, JoinIntTest) {
   std::vector<int> tokens;
   tokens.push_back(10);

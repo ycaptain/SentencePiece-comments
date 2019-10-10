@@ -26,6 +26,8 @@ namespace word {
 // Word model simply counts the frequency of
 // space-delimited tokens, then keep top
 // |vocab_size| frequent tokens.
+
+// word 训练模型的训练器类
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,

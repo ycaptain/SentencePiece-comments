@@ -22,6 +22,8 @@ namespace sentencepiece {
 namespace word {
 
 // Tokenize text with whitespaces.
+// 通过空格对文本进行标记
+// 用 word 方法实现 model 接口，并重写编码方式
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);

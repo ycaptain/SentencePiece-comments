@@ -21,13 +21,18 @@
 #include "testharness.h"
 #include "util.h"
 
+// 命名空间 sentencepiece
 namespace sentencepiece {
+// 命名空间 sentencepiece::word
 namespace word {
 namespace {
 
 // Space symbol (U+2581)
+// 定义空格字符 Unicode 编码
 #define WS "\xE2\x96\x81"
 
+// 定义开始训练方法
+// 传入一个存有分词文本的向量和一个 int 型数值表示结果数量大小
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
   test::ScopedTempFile input_scoped_file("input");
   test::ScopedTempFile model_scoped_file("model");
@@ -59,6 +64,7 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
   const auto &model = processor.model_proto();
   std::vector<std::string> pieces;
 
+  // 去除<unk>, <s>, </s>
   // remove <unk>, <s>, </s>
   for (int i = 3; i < model.pieces_size(); ++i) {
     pieces.emplace_back(model.pieces(i).piece());
@@ -68,6 +74,8 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
 }
 }  // namespace
 
+// 对训练器进行基本分词过程的训练
+// 观测训练结果是否符合预期
 TEST(TrainerTest, BasicTest) {
   EXPECT_EQ(WS "I " WS "apple " WS "have " WS "pen",
             RunTrainer({"I have a pen", "I have an apple", "apple pen"}, 10));

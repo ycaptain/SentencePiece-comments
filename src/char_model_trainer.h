@@ -25,7 +25,7 @@ namespace character {
 
   // Trainer class for character model.
 // DOC: 
-// 字符 (char) 模型训练器 类
+// char 模型训练器 类
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,

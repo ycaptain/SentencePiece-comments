@@ -25,7 +25,9 @@
 namespace sentencepiece {
 namespace word {
 
+// 定义 word 模型的训练器类
 util::Status Trainer::Train() {
+	// 检查训练器的状态
   RETURN_IF_ERROR(status());
 
   CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
@@ -33,6 +35,7 @@ util::Status Trainer::Train() {
 
   RETURN_IF_ERROR(LoadSentences());
 
+  // 定义一个无序图用于储存单词出现频率
   std::unordered_map<std::string, uint64> freq;
   for (const auto &it : sentences_) {
     for (const auto &s : SplitIntoWords(it.first)) {
@@ -40,6 +43,7 @@ util::Status Trainer::Train() {
     }
   }
 
+  // 定义词库大小 若词库大小为零则返回
   const int vocab_size = trainer_spec_.vocab_size() - meta_pieces_.size();
   CHECK_GE_OR_RETURN(vocab_size, 0);
 
@@ -51,6 +55,8 @@ util::Status Trainer::Train() {
   const float logsum = log(sum);
 
   CHECK_OR_RETURN(final_pieces_.empty());
+
+  // 对每个单词进行计数
   for (const auto &it : Sorted(freq)) {
     if (it.first.find(kUNKStr) != std::string::npos) {
       continue;
@@ -66,6 +72,7 @@ util::Status Trainer::Train() {
     trainer_spec_.set_vocab_size(final_pieces_.size() + meta_pieces_.size());
   }
 
+  // 将训练好的词库进行储存
   return Save();
 }
 }  // namespace word
