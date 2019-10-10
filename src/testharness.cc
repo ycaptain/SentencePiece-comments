@@ -25,10 +25,16 @@
 #include "common.h"
 #include "util.h"
 
+// 命名空间:sentencepiece::test
 namespace sentencepiece {
 namespace test {
 
 namespace {
+// 定义结构体
+// 变量:
+//      base -- 保存库名
+//      name -- 保存文件名
+//      func -- 函数指针
 struct Test {
   const char *base;
   const char *name;
@@ -49,24 +55,29 @@ bool RegisterTest(const char *base, const char *name, void (*func)()) {
   return true;
 }
 
+// 进行各项测试
 int RunAllTests() {
   int num = 0;
+  //当测试类指针为空时 输出报错信息
   if (tests == nullptr) {
     std::cerr << "No tests are found" << std::endl;
     return 0;
   }
 
+  // 在每一项测试完成后 输出提示信息
   for (const Test &t : *(tests)) {
     std::cerr << "[ RUN      ] " << t.base << "." << t.name << std::endl;
     (*t.func)();
     std::cerr << "[       OK ] " << t.base << "." << t.name << std::endl;
     ++num;
   }
+  // 全部测试通过后输出相应信息
   std::cerr << "==== PASSED " << num << " tests" << std::endl;
 
   return 0;
 }
 
+// 检测当前文件名
 ScopedTempFile::ScopedTempFile(absl::string_view filename) {
   char pid[64];
   snprintf(pid, sizeof(pid), "%u",
@@ -79,6 +90,7 @@ ScopedTempFile::ScopedTempFile(absl::string_view filename) {
   filename_ = string_util::StrCat(".XXX.tmp.", filename, ".", pid);
 }
 
+// 在检测相关完成后删除临时文件
 ScopedTempFile::~ScopedTempFile() {
 #ifdef OS_WIN
   ::DeleteFile(WPATH(filename_.c_str()));
