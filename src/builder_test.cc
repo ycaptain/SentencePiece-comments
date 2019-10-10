@@ -26,9 +26,13 @@ DECLARE_string(data_dir);
 namespace sentencepiece {
 namespace normalizer {
 
+// DOC:
+// 将要替换空格的 `▁` 字符，Lower One Eighth Block，U+2581
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// DOC:
+// 移除冗余字符映射键值测试
 TEST(BuilderTest, RemoveRedundantMapTest) {
   Builder::CharsMap chars_map;
 
@@ -46,12 +50,15 @@ TEST(BuilderTest, RemoveRedundantMapTest) {
   EXPECT_NE(chars_map.end(), chars_map.find({0x0061, 0x0062, 0x0063}));
 }
 
+// DOC:
+// 获取非法指令名预编译字符映射键值测试
 TEST(BuilderTest, GetPrecompiledCharsMapWithInvalidNameTest) {
   std::string output;
   EXPECT_NOT_OK(Builder::GetPrecompiledCharsMap("", &output));
   EXPECT_NOT_OK(Builder::GetPrecompiledCharsMap("__UNKNOWN__", &output));
 }
-
+// DOC:
+// 链接NFKC字符映射键值表测试
 TEST(BuilderTest, BuildNFKCMapTest) {
   Builder::CharsMap chars_map;
 #ifdef ENABLE_NFKC_COMPILE
@@ -62,6 +69,8 @@ TEST(BuilderTest, BuildNFKCMapTest) {
 #endif
 }
 
+// DOC:
+// 返回指令对应的二进制表示测试
 TEST(BuilderTest, GetPrecompiledCharsMapTest) {
   {
     const NormalizerSpec spec =
@@ -99,6 +108,8 @@ TEST(BuilderTest, GetPrecompiledCharsMapTest) {
   }
 }
 
+// DOC:
+// 编译字符映射键值表为二进制字符序列测试
 TEST(BuilderTest, CompileCharsMap) {
   Builder::CharsMap chars_map;
 
@@ -137,6 +148,8 @@ TEST(BuilderTest, CompileCharsMap) {
   EXPECT_EQ("abcか", normalizer.Normalize("あいうえおか"));
 }
 
+// DOC:
+// 从文件中载入字符映射键值表测试
 TEST(BuilderTest, LoadCharsMapTest) {
   Builder::CharsMap chars_map;
   EXPECT_OK(Builder::LoadCharsMap(util::JoinPath(FLAGS_data_dir, "nfkc.tsv"),
@@ -157,6 +170,7 @@ TEST(BuilderTest, LoadCharsMapTest) {
   EXPECT_OK(Builder::LoadCharsMap(output_tsv.filename(), &saved_chars_map));
   EXPECT_EQ(chars_map, saved_chars_map);
 
+// 开启NFKC编译
 #ifdef ENABLE_NFKC_COMPILE
   Builder::CharsMap nfkc_map;
   EXPECT_OK(Builder::BuildNFKCMap(&nfkc_map));
@@ -164,6 +178,8 @@ TEST(BuilderTest, LoadCharsMapTest) {
 #endif
 }
 
+// DOC:
+// 从文件中载入空字符映射键值表测试
 TEST(BuilderTest, LoadCharsMapWithEmptyeTest) {
   test::ScopedTempFile test_tsv("test.tsv");
   test::ScopedTempFile test_out_tsv("test_out.tsv");
@@ -189,6 +205,8 @@ TEST(BuilderTest, LoadCharsMapWithEmptyeTest) {
   EXPECT_EQ(chars_map, new_chars_map);
 }
 
+// DOC:
+// 包含大量相同前缀测试
 TEST(BuilderTest, ContainsTooManySharedPrefixTest) {
   Builder::CharsMap chars_map;
   std::vector<char32> keys;

@@ -189,7 +189,7 @@ class Builder {
   // Format:
   // src_uchar1 src_uchar2 ... <tab> trg_uchar1 trg_uchar2...
   // (src|trg)_ucharX must be a LoadCharsMaphex of Unicode code point.
-  static util::Status (absl::string_view filename,
+  static util::Status LoadCharsMap(absl::string_view filename,
                                    CharsMap *chars_map);
 
   // DOC:
