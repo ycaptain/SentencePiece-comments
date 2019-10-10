@@ -33,7 +33,7 @@ namespace {
 #define WS "\xe2\x96\x81"
 
 // DOC:
-//      对UnigramTrainer进行TrainerModel模型建立的相关测试
+//      对 UnigramTrainer 进行 TrainerModel 模型建立的相关测试
 TEST(UnigramTrainerTest, TrainerModelTest) {
   TrainerSpec trainer_spec;
   NormalizerSpec normalizer_spec;
@@ -42,7 +42,7 @@ TEST(UnigramTrainerTest, TrainerModelTest) {
 }
 
 // DOC:
-//      对UnigramTrainer进行具体分词训练过程的测试
+//      对 UnigramTrainer 进行具体分词训练过程的测试
 //      比较训练所得结果是否符合预期
 TEST(UnigramTrainerTest, EndToEndTest) {
   const test::ScopedTempFile sf("tmp_model");

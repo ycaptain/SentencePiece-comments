@@ -33,16 +33,16 @@ namespace unigram {
 namespace {
 
 // DOC:
-// 将Lattice中的提前分配结点数预设为1024
+// 将 Lattice 中的提前分配结点数预设为 1024
 // Size of nodes pre-allocated in Lattice.
 constexpr size_t kPreallocateLatticeNodeSize = 1024;
 
 // DOC:
-//      根据输入模式返回log(exp(x) + exp(y))
+//      根据输入模式返回 log(exp(x) + exp(y))
 //
 // 参数:
 //      x,y -- 计算所需浮点数
-//      init_mode -- 输入模式(0:返回y;1:返回log(exp(x) + exp(y)))
+//      init_mode -- 输入模式 (0: 返回 y; 1: 返回 log(exp(x) + exp(y)))
 // Returns log(exp(x) + exp(y)).
 // if init_mode is true, returns log(exp(y)) == y.
 // log(\sum_i exp(a[i])) can be computed as
@@ -64,12 +64,12 @@ inline float LogSumExp(float x, float y, bool init_mode) {
 }  // namespace
 
 // DOC:
-//      对Lattice的初始化
+//      对 Lattice 的初始化
 Lattice::Lattice() : node_allocator_(kPreallocateLatticeNodeSize) {}
 Lattice::~Lattice() {}
 
 // DOC:
-// 返回begin_nodes_中在pos处开始的结点组
+// 返回 begin_nodes_ 中在 pos 处开始的结点组
 //
 // 参数:
 //    pos -- 表示开始位置的参数
@@ -78,7 +78,7 @@ const std::vector<Lattice::Node *> &Lattice::begin_nodes(int pos) const {
 }
 
 // DOC:
-// 返回在pos处结束的结点组
+// 返回在 pos 处结束的结点组
 //
 // 参数:
 //    pos -- 表示结束位置的参数
@@ -87,7 +87,7 @@ const std::vector<Lattice::Node *> &Lattice::end_nodes(int pos) const {
 }
 
 // DOC:
-// 返回Unicode编码下的长度
+// 返回 Unicode 编码下的长度
 int Lattice::size() const {
   // DOC:
   // 对 size - 1 是由于 surface_ 末尾存在终止字符
@@ -96,21 +96,21 @@ int Lattice::size() const {
 }
 
 // DOC:
-// 返回多字节字符编码下(utf8)的长度
+// 返回多字节字符编码下 (utf8) 的长度
 int Lattice::utf8_size() const { return sentence_.size(); }
 
 // DOC:
 // 返回整个当前句子的头指针
-// 相当于surface(0)
+// 相当于 surface(0)
 const char *Lattice::sentence() const { return sentence_.data(); }
 
 // DOC:
 // 返回当前句子从pos位至结尾的子串
-// 相当于对句子取从pos为至结尾的切片(sentence[pos:])
+// 相当于对句子取从pos为至结尾的切片 (sentence[pos:])
 // 参数:
-//      pos -- 表示sentence切片的起始位置
+//      pos -- 表示 sentence 切片的起始位置
 // 返回:
-//      从pos为至结尾的切片 -- sentence[pos:]
+//      从 pos 为至结尾的切片 -- sentence[pos:]
 const char *Lattice::surface(int pos) const { return surface_[pos]; }
 
 // DOC:
@@ -133,7 +133,7 @@ Lattice::Node *Lattice::NewNode() {
 }
 
 // DOC:
-// 清除lattice
+// 清除 lattice
 void Lattice::Clear() {
   begin_nodes_.clear();
   end_nodes_.clear();
@@ -143,7 +143,7 @@ void Lattice::Clear() {
 }
 
 // DOC:
-// 根据一个string_view类型的sentence 创建一个Lattice对象
+// 根据一个 string_view 类型的 sentence 创建一个 Lattice 对象
 void Lattice::SetSentence(absl::string_view sentence) {
   Clear();
 
@@ -162,7 +162,7 @@ void Lattice::SetSentence(absl::string_view sentence) {
   surface_.push_back(sentence.data());
 
   // DOC:
-  // 初始化begin_nodes_ end_nodes_的空间
+  // 初始化 begin_nodes_ 和 end_nodes_ 的空间
   const int len = size();
   begin_nodes_.resize(len + 1);
   end_nodes_.resize(len + 1);
@@ -187,7 +187,7 @@ void Lattice::SetSentence(absl::string_view sentence) {
 }
 
 // DOC:
-// 将sentence[pos, pos + length - 1]子串 作为一个新的结点插入到lattice
+// 将 sentence[pos, pos + length - 1] 子串 作为一个新的结点插入到 lattice
 //
 // 参数:
 //    pos -- 表示插入位置的参数
@@ -197,7 +197,7 @@ void Lattice::SetSentence(absl::string_view sentence) {
 //    新插入结点的指针
 //
 // 注意:
-// 在调用此方法之后 必须设置该结点的score与id参数
+// 在调用此方法之后 必须设置该结点的 score 与 id 参数
 Lattice::Node *Lattice::Insert(int pos, int length) {
   Node *node = NewNode();
   node->pos = pos;
@@ -223,8 +223,8 @@ std::vector<Lattice::Node *> Lattice::Viterbi() {
   const int len = size();
 
   // DOC:
-  // 自左向右递推各位置结点的backtrace_score 并记录前向结点
-  // 方法:枚举比较法
+  // 自左向右递推各位置结点的 backtrace_score 并记录前向结点
+  // 方法: 枚举比较法
   for (int pos = 0; pos <= len; ++pos) {
     for (Node *rnode : begin_nodes_[pos]) {
       rnode->prev = nullptr;
@@ -265,7 +265,7 @@ std::vector<Lattice::Node *> Lattice::Viterbi() {
     //
     // 参数:
     //    freq -- 表示句子出现的频率
-    //    excepted -- 保存各单词出现概率对数值vector的指针 其下表为单词ID
+    //    excepted -- 保存各单词出现概率对数值 vector 的指针 其下表为单词 ID
     //
     // 返回:
     //    当前句子出现概率的对数值
@@ -285,7 +285,7 @@ float Lattice::PopulateMarginal(float freq,
   std::vector<float> beta(node_allocator_.size(), 0.0);
 
   // DOC:
-  //    初始化alpha
+  //    初始化 alpha
   //    自前向后遍历叠加概率
   for (int pos = 0; pos <= len; ++pos) {
     for (Node *rnode : begin_nodes_[pos]) {
@@ -298,7 +298,7 @@ float Lattice::PopulateMarginal(float freq,
   }
 
   // DOC:
-  //    初始化beta
+  //    初始化 beta
   //    自后向前遍历叠加概率
   for (int pos = len; pos >= 0; --pos) {
     for (Node *lnode : end_nodes_[pos]) {
@@ -311,12 +311,12 @@ float Lattice::PopulateMarginal(float freq,
   }
 
   // DOC:
-  //    更新expected数组
+  //    更新 expected 数组
   const float Z = alpha[begin_nodes_[len][0]->node_id];
   for (int pos = 0; pos < len; ++pos) {
     for (Node *node : begin_nodes_[pos]) {
       if (node->id >= 0) {
-        // 注意:|expected|的下标为该单词在词库中的ID 而不是在lattice中的
+        // 注意: |expected| 的下标为该单词在词库中的 ID 而不是在 lattice 中的
         // the index of |expected| is a Node::id, which is a vocabulary id.
         (*expected)[node->id] += freq * exp(alpha[node->node_id] + node->score +
                                             beta[node->node_id] - Z);
@@ -331,11 +331,11 @@ float Lattice::PopulateMarginal(float freq,
     // 返回n个结点条件下的最佳路径的遍历结点序
     //
     // 参数:
-    //    size_t -- 预分配hypothesis_allocator的大小
-    //    nbest_size -- 表示nbest_size个结点的条件下
+    //    size_t -- 预分配 hypothesis_allocator 的大小
+    //    nbest_size -- 表示 nbest_size 个结点的条件下
     //
     // 返回:
-    //    n个结点条件下的最佳路径的遍历结点序
+    //    n 个结点条件下的最佳路径的遍历结点序
 std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
   // DOC:
   // 针对不同的 nbest_size 分类
@@ -350,14 +350,14 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
 
   // DOC:
   //    采用枚举法解决 N-bests 问题
-  //    数据储存:优先队列
-  //    对于每一个lattice 自句末(终止符)枚举每一条路径
-  //    对于每条到达结点x的路径 计算 f(x) = g(x) + h(x)
-  //    其中 g(x): 表示自终止符到该路径最前段的score和
+  //    数据储存: 优先队列
+  //    对于每一个 lattice 自句末 (终止符) 枚举每一条路径
+  //    对于每条到达结点 x 的路径 计算 f(x) = g(x) + h(x)
+  //    其中 g(x): 表示自终止符到该路径最前段的 score
   //        h(x): 表示自起始符到路径x的最高score
-  //        f(x): 表示该假设sentence自优先队列被取出的优先级 即该假设sentence的可能性
+  //        f(x): 表示该假设 sentence 自优先队列被取出的优先级 即该假设 sentence 的可能性
   // 注意:
-  //    自前向后使用Viterbi算法恰好可能得到h(x)
+  //    自前向后使用 Viterbi 算法恰好可能得到 h(x)
   //    自优先队列中取得 N-bests 问题的最终答案
   // Uses A* search to enumerate N-bests.
   // Given a lattice, enumerates hypotheses (paths) from EOS.
@@ -374,8 +374,8 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
   // 成员变量:
   //    node --
   //    next --
-  //    fx -- 当前假设路径的f(x)值
-  //    gx -- 当前假设路径的g(x)值
+  //    fx -- 当前假设路径的 f(x) 值
+  //    gx -- 当前假设路径的 g(x) 值
   struct Hypothesis {
     Node *node;
     Hypothesis *next;
@@ -396,7 +396,7 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
   };
 
   // DOC:
-  //    初始化:创建优先队列 预设分配空间大小
+  //    初始化: 创建优先队列 预设分配空间大小
   using Agenda = std::priority_queue<Hypothesis *, std::vector<Hypothesis *>,
                                      HypothesisComparator>;
   constexpr size_t kPreallocatedHypothesisSize = 512;
@@ -406,7 +406,7 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
   std::vector<std::vector<Node *>> results;
 
   // DOC:
-  //    初始化:将终字符加入队列中 自后向前搜素
+  //    初始化: 将终字符加入队列中 自后向前搜素
   auto *eos = hypothesis_allocator.Allocate();
   eos->node = eos_node();
   eos->next = nullptr;
@@ -415,7 +415,7 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
   agenda.push(eos);
 
   // DOC:
-  //    预处理:运行 Viterbi 算法得到前向score
+  //    预处理: 运行 Viterbi 算法得到前向 score
   // Run Viterbi first to fill backtrace score.
   Viterbi();
 
@@ -425,7 +425,7 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
     auto *node = top->node;
 
     // DOC:
-    //      当到达起始符后:回溯 将单词存入result 退出循环
+    //      当到达起始符后回溯 将单词存入 result 退出循环
     // Reaches to BOS
     if (node == bos_node()) {
       results.resize(results.size() + 1);
@@ -455,7 +455,7 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
 
     // DOC:
     //      当输入字符串太长或包含重复部分时
-    //      保留前kMinAgendaSize的假设路径 以缩小agenda 从而避免agenda空间过大占用过多内存的问题
+    //      保留前kMinAgendaSize的假设路径 以缩小 agenda 从而避免 agenda 空间过大占用过多内存的问题
     // When the input is too long or contains duplicated phrases,
     // `agenda` will get extremely big. Here we avoid this case by
     // dynamically shrinking the agenda.
@@ -478,13 +478,13 @@ std::vector<std::vector<Lattice::Node *>> Lattice::NBest(size_t nbest_size) {
 }
 
     // DOC:
-    // 返回根据分词块的产生可能性 在lattice中选择的一条组成路径
+    // 返回根据分词块的产生可能性 在 lattice 中选择的一条组成路径
     //
     // 参数:
     //    theta -- 平滑参数
     //
     // 返回:
-    //    lattice中的一条组成路径
+    //    lattice 中的一条组成路径
 std::vector<Lattice::Node *> Lattice::Sample(float theta) {
   const int len = size();
   if (len == 0) return {};
@@ -529,12 +529,12 @@ std::vector<Lattice::Node *> Lattice::Sample(float theta) {
 // Model::~Model() {}
 
 // DOC:
-//      预处理lattice
+//      预处理 lattice
 // 参数:
-//      lattice -- 待处理的Lattice对象的指针
+//      lattice -- 待处理的 Lattice 对象的指针
 void Model::PopulateNodes(Lattice *lattice) const {
   // DOC:
-  //    返回自begin_pos位切片到结尾的字符长度
+  //    返回自 begin_pos 位切片到结尾的字符长度
   // 参数:
   //    begin_pos -- 起始单词的序号
   //    end -- 终止处结点指针
@@ -546,13 +546,13 @@ void Model::PopulateNodes(Lattice *lattice) const {
 
   // DOC:
   // 设置词典未知词的惩罚参数
-  // 未知词的score = 最低值 - 惩罚参数
+  // 未知词的 score = 最低值 - 惩罚参数
   constexpr float kUnkPenalty = 10.0;
   const float unk_score = min_score() - kUnkPenalty;
 
   // DOC:
-  // len -- lattice的大小
-  // end -- latice结尾字符指针
+  // len -- lattice 的大小
+  // end -- latice 结尾字符指针
   const int len = lattice->size();
   const char *end = lattice->sentence() + lattice->utf8_size();
 
@@ -567,7 +567,7 @@ void Model::PopulateNodes(Lattice *lattice) const {
     const char *begin = lattice->surface(begin_pos);
 
     // DOC:
-    //      返回begin_pos号切片的前缀结点数
+    //      返回 begin_pos 号切片的前缀结点数
     // Finds all pieces which are prefix of surface(begin_pos).
     const size_t num_nodes = trie_->commonPrefixSearch(
         begin, trie_results.data(), trie_results.size(),
@@ -608,7 +608,7 @@ void Model::PopulateNodes(Lattice *lattice) const {
 // 参数:
 //      piece -- 分词的字符串形式
 // 返回:
-//      所查询分词在字典中的ID
+//      所查询分词在字典中的 ID
 int Model::PieceToId(absl::string_view piece) const {
   auto it = reserved_id_map_.find(piece);
   if (it != reserved_id_map_.end()) {
@@ -630,7 +630,7 @@ void Model::BuildTrie(std::vector<std::pair<absl::string_view, int>> *pieces) {
   }
 
   // DOC:
-  //    在创建DoubleArray后对分词排序
+  //    在创建 DoubleArray 后对分词排序
   //    并且只接受排序后的字符串
   // sort by sentencepiece since DoubleArray::build()
   // only accepts sorted strings.
@@ -701,7 +701,7 @@ Model::~Model() {}
 // 参数:
 //      normalized -- 已规范化的字符串
 // 返回:
-//      经过Viterbi算法处理过的最佳分词序列
+//      经过 Viterbi 算法处理过的最佳分词序列
 EncodeResult Model::Encode(absl::string_view normalized) const {
   if (!status().ok() || normalized.empty()) {
     return {};
@@ -720,12 +720,12 @@ EncodeResult Model::Encode(absl::string_view normalized) const {
 }
 
 // DOC:
-//      处理计算字符串nbest_size条件下的最佳匹配
+//      处理计算字符串 nbest_size 条件下的最佳匹配
 // 参数:
 //      normalized -- 已规范化的字符串
 //      nbest_size -- 分词的个数限制
 // 返回:
-//      经过NBest算法处理过的最佳分词序列
+//      经过 NBest 算法处理过的最佳分词序列
 NBestEncodeResult Model::NBestEncode(absl::string_view normalized,
                                      int nbest_size) const {
   if (!status().ok() || normalized.empty()) {

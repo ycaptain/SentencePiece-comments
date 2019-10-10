@@ -90,8 +90,8 @@ void ParseCommandLineFlags(int argc, char **argv,
   }                                                                       \
   using sentencepiece_flags_fL##shorttype::FLAGS_##name
 
-// DOC: （未被使用！！！)
-// 声明 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 声明Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      type -- Flag 值的类型
@@ -113,15 +113,15 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_int32(name, value, help) \
   DEFINE_VARIABLE(int32, I, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义 int32 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义int32类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称
 #define DECLARE_int32(name) DECLARE_VARIABLE(int32, I, name)
 
-// DOC: (未被使用！！！)
-// 定义 int64 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义int64类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      type -- Flag 值的类型
@@ -130,15 +130,15 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_int64(name, value, help) \
   DEFINE_VARIABLE(int64, I64, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义 int64 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义int64类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称
 #define DECLARE_int64(name) DECLARE_VARIABLE(int64, I64, name)
 
-// DOC: (未被使用！！！)
-// 定义 uint64 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义uint64类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      type -- Flag 值的类型
@@ -147,8 +147,8 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_uint64(name, value, help) \
   DEFINE_VARIABLE(uint64, U64, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义 uint64 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义uint64类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称
@@ -164,8 +164,8 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_double(name, value, help) \
   DEFINE_VARIABLE(double, D, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义 double 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义double类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称
@@ -181,8 +181,8 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_bool(name, value, help) \
   DEFINE_VARIABLE(bool, B, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义bool类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义bool类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称
@@ -198,8 +198,8 @@ void ParseCommandLineFlags(int argc, char **argv,
 #define DEFINE_string(name, value, help) \
   DEFINE_VARIABLE(std::string, S, name, value, help)
 
-// DOC: (未被使用！！！)
-// 定义 std::string 类型的 Flag 变量及对应命名空间，并使用该命名空间
+// DOC:
+// 定义std::string类型的Flag变量及对应命名空间，并使用该命名空间。
 //
 // 参数:
 //      name -- Flag 的名称

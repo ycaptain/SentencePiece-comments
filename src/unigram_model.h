@@ -31,8 +31,8 @@
 namespace sentencepiece {
 namespace unigram {
 // DOC:
-// Lattice类
-// 保存unigram处理后的所有分词片段
+// Lattice 类
+// 保存 unigram 处理后的所有分词片段
 //
 // Lattice represents a search space of sentence piece segmentation.
 class Lattice {
@@ -41,21 +41,21 @@ class Lattice {
  public:
 
 // DOC:
-// Lattice对象的构造和删除
+// Lattice 对象的构造和删除
   Lattice();
   virtual ~Lattice();
 
 // DOC:
-// 用于保存单个piece
+// 用于保存单个 piece
 // 成员变量:
-//      piece -- 当前结点单词保存为string_view格式
+//      piece -- 当前结点单词保存为 string_view 格式
 //      pos -- 当前结点保存单词的在句子中的位置
-//      length -- 当前结点保存以Unicode编码单词的长度 注意:不是utf8
-//      node_id -- 当前结点在当前lattice中的位置
-//      id -- 当前结点保存单词的ID 注意:以-1表示unkrown单词
+//      length -- 当前结点保存以 Unicode 编码单词的长度 注意:不是 utf8
+//      node_id -- 当前结点在当前 lattice 中的位置
+//      id -- 当前结点保存单词的 ID 注意: 以 -1 表示 unkrown 单词
 //      score -- 当前结点保存单词的词频对数 即该词出现概率的对数值
-//      backtrace_score -- 在Viterbi算法中 自当前结点向前回溯的最大概率叠加值
-//      prev -- 在Viterbi算法中 当前结点的最佳路径中 该结点的上层结点指针
+//      backtrace_score -- 在 Viterbi 算法中 自当前结点向前回溯的最大概率叠加值
+//      prev -- 在 Viterbi 算法中 当前结点的最佳路径中 该结点的上层结点指针
 //      DebugString -- 未使用
 //
   struct Node {
@@ -82,7 +82,7 @@ class Lattice {
   Node *eos_node() const;
 
   // DOC:
-  // 返回begin_nodes_中在pos处开始的结点组
+  // 返回 begin_nodes_ 中在 pos 处开始的结点组
   //
   // 参数:
   //    pos -- 表示开始位置的参数
@@ -90,7 +90,7 @@ class Lattice {
   const std::vector<Node *> &begin_nodes(int pos) const;
 
   // DOC:
-  // 返回在pos处结束的结点组
+  // 返回在 pos 处结束的结点组
   //
   // 参数:
   //    pos -- 表示结束位置的参数
@@ -98,39 +98,39 @@ class Lattice {
   const std::vector<Node *> &end_nodes(int pos) const;
 
   // DOC:
-  // 返回Unicode编码下的长度
+  // 返回 Unicode 编码下的长度
   // Returns Unicode character length.
   int size() const;
 
   // DOC:
-  // 返回多字节字符编码下(utf8)的长度
+  // 返回多字节字符编码下 (utf8) 的长度
   // Returns multi-byte (utf8) length.
   int utf8_size() const;
 
   // DOC:
-  // 返回当前句子从pos位至结尾的子串
-  // 相当于句子从pos为至结尾的切片
+  // 返回当前句子从 pos 位至结尾的子串
+  // 相当于句子从 pos 为至结尾的切片
   // Returns the substring of sentence. sentence[pos:]
   const char *surface(int pos) const;
 
   // DOC:
   // 返回整个当前句子的头指针
-  // 相当于surface(0)
+  // 相当于 surface(0)
   // Returns immutable sentence. The same as surface(0)
   const char *sentence() const;
 
   // DOC:
-  // 清除lattice
+  // 清除 lattice
   // Clears the lattice.
   void Clear();
 
   // DOC:
-  // 根据一个string_view类型的sentence 创建一个Lattice对象
+  // 根据一个 string_view 类型的 sentence 创建一个 Lattice 对象
   // Sets new sentence.
   void SetSentence(absl::string_view sentence);
 
   // DOC:
-  // 将sentence[pos, pos + length - 1]子串 作为一个新的结点插入到lattice
+  // 将sentence[pos, pos + length - 1]子串 作为一个新的结点插入到 lattice
   //
   // 参数:
   //    pos -- 表示插入位置的参数
@@ -140,7 +140,7 @@ class Lattice {
   //    新插入结点的指针
   //
   // 注意:
-  // 在调用此方法之后 必须设置该结点的score与id参数
+  // 在调用此方法之后 必须设置该结点的 score 与 id 参数
   // Inserts a new node at [pos, pos + length - 1].
   // After calling this method, The caller must set Node::score and Node::id.
   Node *Insert(int pos, int length);
@@ -164,18 +164,18 @@ class Lattice {
   //    nbest_size -- 表示nbest_size个结点的条件下
   //
   // 返回:
-  //    n个结点条件下的最佳路径的遍历结点序
+  //    n 个结点条件下的最佳路径的遍历结点序
   // Returns n-best results.
   std::vector<std::vector<Node *>> NBest(size_t nbest_size);
 
   // DOC:
-  // 返回根据分词块的产生可能性 在lattice中选择的一条组成路径
+  // 返回根据分词块的产生可能性 在 lattice 中选择的一条组成路径
   //
   // 参数:
   //    theta -- 平滑参数
   //
   // 返回:
-  //    lattice中的一条组成路径
+  //    lattice 中的一条组成路径
   //
   // Samples one path from the lattice according to the
   // generation probability (Product of piece probabilities).
@@ -187,7 +187,7 @@ class Lattice {
   //
   // 参数:
   //    freq -- 表示句子出现的频率
-  //    excepted -- 保存各单词出现概率对数值vector的指针 其下表为单词ID
+  //    excepted -- 保存各单词出现概率对数值 vector 的指针 其下表为单词 ID
   //
   // 返回:
   //    当前句子出现概率的对数值
@@ -210,11 +210,11 @@ class Lattice {
 
   // DOC:
   // 各私有成员变量：
-  // sentence_ -- 保存sentence
-  // surface_ -- 保存sentenced的全部切片
+  // sentence_ -- 保存 sentence
+  // surface_ -- 保存 sentenced 的全部切片
   // begin_nodes_ -- 保存各位置开始的结点组
   // end_nodes_ -- 保存各位置结束的结点组
-  // node_allocator_ -- 结点空间分配器 保存lattice中的全部结点
+  // node_allocator_ -- 结点空间分配器 保存 lattice 中的全部结点
   absl::string_view sentence_;
   std::vector<const char *> surface_;
   std::vector<std::vector<Node *>> begin_nodes_;
@@ -224,7 +224,7 @@ class Lattice {
 
 // DOC:
 // Model类
-// 实现ModelInterface接口
+// 实现 ModelInterface 接口
 //
 class Model : public ModelInterface {
  public:
@@ -237,16 +237,16 @@ class Model : public ModelInterface {
     // 参数:
     //      normalized -- 已规范化的字符串
     // 返回:
-    //      经过Viterbi算法处理过的最佳分词序列
+    //      经过 Viterbi 算法处理过的最佳分词序列
   EncodeResult Encode(absl::string_view normalized) const override;
 
     // DOC:
-    //      处理计算字符串nbest_size条件下的最佳匹配
+    //      处理计算字符串 nbest_size 条件下的最佳匹配
     // 参数:
     //      normalized -- 已规范化的字符串
     //      nbest_size -- 分词的个数限制
     // 返回:
-    //      经过NBest算法处理过的最佳分词序列
+    //      经过 NBest 算法处理过的最佳分词序列
   NBestEncodeResult NBestEncode(absl::string_view normalized,
                                 int nbest_size) const override;
 
@@ -262,37 +262,37 @@ class Model : public ModelInterface {
 
   // DOC：
   //    返回句子所有分词中的最小概率值
-  //    设定未登录词的score为min_score() - 10
+  //    设定未登录词的 score 为 min_score() - 10
   // Returns the minimum score in sentence pieces.
   // min_score() - 10 is used for the cost of unknown sentence.
   float min_score() const { return min_score_; }
 
   // DOC:
   //    返回句子所有分词中的最大概率值
-  //    用户自定义词的score为max_score()
+  //    用户自定义词的 score 为 max_score()
   // Returns the maximum score in sentence pieces.
   // max_score() is used for the cost of user defined symbols.
   float max_score() const { return max_score_; }
 
   // DOC:
-  //      预处理lattice
+  //      预处理 lattice
   // 参数:
-  //      lattice -- 待处理的Lattice对象的指针
+  //      lattice -- 待处理的 Lattice 对象的指针
   // 注意:
-  //      在调用该函数后 Viterbi()返回最佳分词片段
+  //      在调用该函数后 Viterbi() 返回最佳分词片段
   // 调用关系:
-  //      调用Viterbi()函数
+  //      调用 Viterbi() 函数
   // Populates all sentence pieces to the |lattice|.
   // After calling this function, lattice.Viterbi() returns the
   // best segmentation.
   void PopulateNodes(Lattice *lattice) const;
 
     // DOC:
-    //      将分词转换为ID
+    //      将分词转换为 ID
     // 参数:
     //      piece -- 分词的字符串形式
     // 返回:
-    //      所查询分词在字典中的ID
+    //      所查询分词在字典中的 ID
   // Returns a vocab id of |piece|.
   int PieceToId(absl::string_view piece) const override;
 
@@ -307,7 +307,7 @@ class Model : public ModelInterface {
   std::unique_ptr<Darts::DoubleArray> trie_;
 
   // DOC:
-  //    字典树results返回的最大值
+  //    字典树 results 返回的最大值
   //    取决于字典树中最大的共享前缀数
   // Maximum size of the return value of Trie, which corresponds
   // to the maximum size of shared common prefix in the sentence pieces.

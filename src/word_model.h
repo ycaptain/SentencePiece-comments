@@ -22,8 +22,8 @@ namespace sentencepiece {
 namespace word {
 
 // Tokenize text with whitespaces.
-// Í¨¹ı¿Õ¸ñ¶ÔÎÄ±¾½øĞĞ±ê¼Ç
-// ÓÃ word ·½·¨ÊµÏÖ model ½Ó¿Ú£¬²¢ÖØĞ´±àÂë·½Ê½
+// é€šè¿‡ç©ºæ ¼å¯¹æ–‡æœ¬è¿›è¡Œæ ‡è®°
+// ç”¨ word æ–¹æ³•å®ç° model æ¥å£ï¼Œå¹¶é‡å†™ç¼–ç æ–¹å¼
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);

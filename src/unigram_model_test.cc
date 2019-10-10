@@ -29,7 +29,7 @@ namespace sentencepiece {
 namespace unigram {
 
 // DOC:
-//      对Lattice进行SetSentence语句的相关测试
+//      对 Lattice 进行 SetSentence 语句的相关测试
 TEST(LatticeTest, SetSentenceTest) {
   Lattice lattice;
 
@@ -75,7 +75,7 @@ TEST(LatticeTest, SetSentenceTest) {
 }
 
 // DOC:
-//      对Lattice进行Insert语句的相关测试
+//      对 Lattice 进行 Insert 语句的相关测试
 TEST(LatticeTest, InsertTest) {
   Lattice lattice;
   lattice.SetSentence("ABあい");
@@ -163,7 +163,7 @@ TEST(LatticeTest, InsertTest) {
 }
 
 // DOC:
-//      在Lattice不完整的条件下 进行Viterbi测试
+//      在 Lattice 不完整的条件下 进行 Viterbi 测试
 TEST(LatticeTest, ViterbiFromIncompleteLatticeTest) {
   Lattice lattice;
   lattice.SetSentence("ABC");
@@ -180,7 +180,7 @@ TEST(LatticeTest, ViterbiFromIncompleteLatticeTest) {
 
 // DOC:
 //      将传入的结点数组以分隔符合并成字符串
-//      分隔符为" "
+//      分隔符为 " "
 // 参数:
 //      nodes -- 传入的待处理数组
 std::string GetTokenized(const std::vector<Lattice::Node *> &nodes) {
@@ -192,10 +192,10 @@ std::string GetTokenized(const std::vector<Lattice::Node *> &nodes) {
 }
 
 // DOC:
-//      插入已知score值的结点
+//      插入已知 score 值的结点
 // 参数:
-//      lattice -- 待插入结点Lattice对象的指针
-//      pos -- 表示将结点插入到Lattice中pos位
+//      lattice -- 待插入结点 Lattice 对象的指针
+//      pos -- 表示将结点插入到 Lattice 中 pos 位
 //      length -- 待插入结点的长度
 //      score -- 待插入结点的概率值
 void InsertWithScore(Lattice *lattice, int pos, int length, float score) {
@@ -203,13 +203,13 @@ void InsertWithScore(Lattice *lattice, int pos, int length, float score) {
 }
 
 // DOC:
-//      插入已知score值与id的结点
+//      插入已知 score 值与 id 的结点
 // 参数:
-//      lattice -- 待插入结点Lattice对象的指针
-//      pos -- 表示将结点插入到Lattice中pos位
+//      lattice -- 待插入结点 Lattice 对象的指针
+//      pos -- 表示将结点插入到 Lattice 中 pos 位
 //      length -- 待插入结点的长度
 //      score -- 待插入结点的概率值
-//      id -- 待插入结点在词库的id
+//      id -- 待插入结点在词库的 id
 void InsertWithScoreAndId(Lattice *lattice, int pos, int length, float score,
                           int id) {
   auto *node = lattice->Insert(pos, length);
@@ -218,7 +218,7 @@ void InsertWithScoreAndId(Lattice *lattice, int pos, int length, float score,
 }
 
 // DOC:
-//      对Lattice进行Viterbi算法测试
+//      对 Lattice 进行 Viterbi 算法测试
 TEST(LatticeTest, ViterbiTest) {
   Lattice lattice;
   lattice.SetSentence("ABC");
@@ -239,7 +239,7 @@ TEST(LatticeTest, ViterbiTest) {
 }
 
 // DOC:
-//      对Lattice进行NBest算法测试
+//      对 Lattice 进行 NBest 算法测试
 TEST(LatticeTest, NBestTest) {
   Lattice lattice;
   lattice.SetSentence("ABC");
@@ -267,7 +267,7 @@ TEST(LatticeTest, NBestTest) {
 }
 
 // DOC:
-//      对Lattice进行PopulateMarginal算法测试
+//      对 Lattice 进行 PopulateMarginal 算法测试
 TEST(LatticeTest, PopulateMarginalTest) {
   Lattice lattice;
   lattice.SetSentence("ABC");
@@ -281,12 +281,12 @@ TEST(LatticeTest, PopulateMarginalTest) {
 
   std::vector<float> probs(6, 0.0);
 
-  // NBest处理后
+  // NBest 处理后
   // 所得的全部拓展路径:
-  // 1.A B C :概率值 = exp(1.0 + 1.2 + 2.5) => path1
-  // 2.AB  C :概率值 = exp(3.0 + 2.5)       => path2
-  // 3.A  BC :概率值 = exp(1.0 + 4.0)       => path3
-  // 4.ABC   :概率值 = exp(2.0)             => path4
+  // 1.A B C : 概率值 = exp(1.0 + 1.2 + 2.5) => path1
+  // 2.AB  C : 概率值 = exp(3.0 + 2.5)       => path2
+  // 3.A  BC : 概率值 = exp(1.0 + 4.0)       => path3
+  // 4.ABC   : 概率值 = exp(2.0)             => path4
 
   // Expand all paths:
   // A B C : exp(1.0 + 1.2 + 2.5) => path1
@@ -313,7 +313,7 @@ TEST(LatticeTest, PopulateMarginalTest) {
 }
 
 // DOC:
-//      对Lattice进行Sample模块的相关测试
+//      对 Lattice 进行 Sample 模块的相关测试
 TEST(LatticeTest, SampleTest) {
   Lattice lattice;
   lattice.SetSentence("ABC");
@@ -328,7 +328,7 @@ TEST(LatticeTest, SampleTest) {
   const float kTheta[] = {0.0, 0.01, 0.5, 0.7, 1.0};
   for (int i = 0; i < arraysize(kTheta); ++i) {
     std::map<std::string, float> probs;
-    // 在引入theta后 扩展lattice中的所有路径
+    // 在引入 theta 后 扩展 lattice 中的所有路径
     // Expands all paths in the lattice.
     probs["A B C"] = exp(kTheta[i] * (1.0 + 1.2 + 1.5));  // A B C
     probs["AB C"] = exp(kTheta[i] * (1.6 + 1.5));         // AB C
@@ -357,7 +357,7 @@ TEST(LatticeTest, SampleTest) {
 }
 
 // DOC:
-//     与创建unigram模型原型相关的测试
+//     与创建 unigram 模型原型相关的测试
 ModelProto MakeBaseModelProto() {
   // DOC:
   // 插入未登录词/起始符/终止符
@@ -377,11 +377,11 @@ ModelProto MakeBaseModelProto() {
 }
 
 // DOC:
-//      向unigram模型原型中加入分词块
+//      向 unigram 模型原型中加入分词块
 // 参数:
-//      model_proto -- 待加入分词块的ModelProto对象的指针
-//      piece -- 待加入分词块的string形式
-//      score -- 待加入分词块的score
+//      model_proto -- 待加入分词块的 ModelProto 对象的指针
+//      piece -- 待加入分词块的 string 形式
+//      score -- 待加入分词块的 score
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -390,7 +390,7 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
 }
 
 // DOC:
-//      对UnigramModel进行SetUnigramModel相关语句测试
+//      对 UnigramModel 进行 SetUnigramModel 相关语句测试
 TEST(UnigramModelTest, SetUnigramModelTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -405,7 +405,7 @@ TEST(UnigramModelTest, SetUnigramModelTest) {
 }
 
 // DOC:
-//      对UnigramModel进行PieceToId/IdToPiece/IsUnknown/IsControl相关语句测试
+//      对 UnigramModel 进行 PieceToId/IdToPiece/IsUnknown/IsControl 相关语句测试
 TEST(UnigramModelTest, PieceToIdTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -467,7 +467,7 @@ TEST(UnigramModelTest, PieceToIdTest) {
 }
 
 // DOC:
-//      在所有输入为未登录词的条件下 对UnigramModel进行PopulateNodes相关测试
+//      在所有输入为未登录词的条件下 对 UnigramModel 进行 PopulateNodes 相关测试
 TEST(UnigramModelTest, PopulateNodesAllUnknownsTest) {
   ModelProto model_proto = MakeBaseModelProto();
   AddPiece(&model_proto, "x");
@@ -487,7 +487,7 @@ TEST(UnigramModelTest, PopulateNodesAllUnknownsTest) {
 }
 
 // DOC:
-//      对UnigramModel进行PopulateNodes相关测试
+//      对 UnigramModel 进行 PopulateNodes 相关测试
 TEST(UnigramModelTest, PopulateNodesTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -520,7 +520,7 @@ TEST(UnigramModelTest, PopulateNodesTest) {
 }
 
 // DOC:
-//      在存在禁用词的条件下 对UnigramModel进行PopulateNodes相关测试
+//      在存在禁用词的条件下 对 UnigramModel 进行 PopulateNodes 相关测试
 TEST(UnigramModelTest, PopulateNodesWithUnusedTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -548,7 +548,7 @@ TEST(UnigramModelTest, PopulateNodesWithUnusedTest) {
 }
 
 // DOC:
-//      对UnigramModel进行NBest算法测试
+//      对 UnigramModel 进行 NBest 算法测试
 TEST(UnigramModelTest, ModelNBestTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -576,7 +576,7 @@ TEST(UnigramModelTest, ModelNBestTest) {
 }
 
 // DOC:
-//      对UnigramModel进行Encode相关测试
+//      对 UnigramModel 进行 Encode 相关测试
 TEST(UnigramModelTest, EncodeTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -671,7 +671,7 @@ TEST(UnigramModelTest, EncodeTest) {
 }
 
 // DOC:
-//      在存在禁用词的条件下 对UnigramModel进行Encode相关测试
+//      在存在禁用词的条件下 对 UnigramModel 进行 Encode 相关测试
 TEST(UnigramModelTest, EncodeWithUnusedTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -714,8 +714,8 @@ TEST(UnigramModelTest, EncodeWithUnusedTest) {
   }
 
   {
-    // Unigram不同于BPE算法
-    // Unigram语言模型只寻找不使用禁用词的最佳路径
+    // Unigram 不同于 BPE 算法
+    // Unigram 语言模型只寻找不使用禁用词的最佳路径
     // This is different from BPE segmentation.
     // Unigram language model simply finds the best path without unused nodes.
     model_proto.mutable_pieces(3)->set_type(ModelProto::SentencePiece::UNUSED);
