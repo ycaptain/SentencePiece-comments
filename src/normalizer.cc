@@ -26,6 +26,11 @@ namespace normalizer {
 
 constexpr int Normalizer::kMaxTrieResultsSize;
 
+// DOC:
+// Normalizer(规范化器)类的构造函数，用于初始化 Normalizer 类对象。
+// 参数：
+//     const NormalizerSpec &spec -- 用于初始化 Normalizer类对象中的 spec_ 成员变量。
+//     const TrainerSpec &trainer_spec -- 用于初始化 Normalizer 类对象中的 treat_whitespace_as_suffix_ 成员变量。
 Normalizer::Normalizer(const NormalizerSpec &spec,
                        const TrainerSpec &trainer_spec)
     : spec_(&spec),
@@ -34,13 +39,25 @@ Normalizer::Normalizer(const NormalizerSpec &spec,
   Init();
 }
 
+// DOC:
+// Normalizer(规范化器)类的构造函数，用于初始化 Normalizer 类对象。
+// 参数：
+//     const NormalizerSpec &spec -- 用于初始化 Normalizer 类对象中的 spec_ 成员变量。
 Normalizer::Normalizer(const NormalizerSpec &spec)
     : spec_(&spec), status_(util::OkStatus()) {
   Init();
 }
 
+// DOC:
+// Normalizer(规范化器)类的析构造函数。
+// 参数：
+//      无
 Normalizer::~Normalizer() {}
 
+// DOC:
+// 对Normalizer(规范化器)类的status_、trie_和normalized_成员变量进行初始化。
+// 参数：
+//      无
 void Normalizer::Init() {
   absl::string_view index = spec_->precompiled_charsmap();
   if (index.empty()) {
@@ -62,6 +79,12 @@ void Normalizer::Init() {
   }
 }
 
+// DOC:
+// 对Normalizer(规范化器)类的status_、trie_和normalized_成员变量进行初始化。
+// 参数：
+//      absl::string_view input -- 待规范的字符串样本
+//      std::string *normalized -- 可供规范化操作的字符串指针
+//      std::vector<size_t> *norm_to_orig -- 存储字符串字节对齐 size_t 数据的 vector
 util::Status Normalizer::Normalize(absl::string_view input,
                                    std::string *normalized,
                                    std::vector<size_t> *norm_to_orig) const {
@@ -79,12 +102,12 @@ util::Status Normalizer::Normalize(absl::string_view input,
   // Ignores heading space.
   if (spec_->remove_extra_whitespaces()) {
     while (!input.empty()) {
-      const auto p = NormalizePrefix(input);
+      const auto p = NormalizePrefix(input);    // p 为 std::pair<absl::string_view, int>
       if (p.first != " ") {
         break;
       }
-      input.remove_prefix(p.second);
-      consumed += p.second;
+      input.remove_prefix(p.second);            // remove_prefix：将 input 的开头向前移动 p.second 个字符。
+      consumed += p.second;                     // 记录下被移除的空格数量
     }
   }
 
@@ -94,8 +117,10 @@ util::Status Normalizer::Normalize(absl::string_view input,
   }
 
   // Reserves the output buffer to avoid re-allocations.
+  // 保留输出缓冲区以避免重新分配。
   const size_t kReservedSize = input.size() * 3;
-  normalized->reserve(kReservedSize);
+  normalized->reserve(kReservedSize);   // string::reserve:要求字符串容量适应计划的大小更改，最大长度为 kReservedSize 个字符。
+                                        // 如果 kReservedSize 大于当前字符串容量，该函数将使容器的容量增加到 kReservedSize 个字符（或更大）。
   norm_to_orig->reserve(kReservedSize);
 
   // Replaces white space with U+2581 (LOWER ONE EIGHT BLOCK)
@@ -103,11 +128,17 @@ util::Status Normalizer::Normalize(absl::string_view input,
   const absl::string_view kSpaceSymbol = "\xe2\x96\x81";
 
   // adds kSpaceSymbol to the current context.
+  // 将 kSpaceSymbol 加入到当前文章
   auto add_ws = [this, &consumed, &normalized, &norm_to_orig, &kSpaceSymbol]() {
     if (spec_->escape_whitespaces()) {
       normalized->append(kSpaceSymbol.data(), kSpaceSymbol.size());
+      // 由 C++ 字符串得到对应的 C_string 的方法是使用 data()
+      // data() 以字符数组的形式返回字符串内容，但并不添加'\0'.
+      // 此处 append 应使用的是 append( const char *str, size_type num );
+      // 意为在字符串的末尾添加 str 中的 num 个字符
       for (size_t n = 0; n < kSpaceSymbol.size(); ++n) {
         norm_to_orig->push_back(consumed);
+        // push_back：新的元素加到 vector 的最后面，位置为当前最后一个元素的下一个元素，新的元素的值是 val 的拷贝（或者是移动拷贝）
       }
     } else {
       normalized->append(" ");
@@ -179,6 +210,10 @@ util::Status Normalizer::Normalize(absl::string_view input,
   return util::OkStatus();
 }
 
+// DOC：
+// 返回未经对齐的初始化字符串，适用于 sentencepiece 训练
+// 参数：
+//      absl::string_view input -- 需要被规范化前缀的输入的字符串。
 std::string Normalizer::Normalize(absl::string_view input) const {
   std::vector<size_t> norm_to_orig;
   std::string normalized;
@@ -186,10 +221,19 @@ std::string Normalizer::Normalize(absl::string_view input) const {
   return normalized;
 }
 
+// DOC：
+// 规范化输入字符串的前缀，并返回一个 std::pair<absl::string_view, int> 类型对象
+// 包含规范化的前缀和前缀的长度
+// 参数：
+//      absl::string_view input -- 需要被规范化前缀的输入的字符串。
+// 返回值：
+//      std::pair<absl::string_view, int> -- 包含规范化的前缀和前缀的长度的 std::pair 对象
 std::pair<absl::string_view, int> Normalizer::NormalizePrefix(
     absl::string_view input) const {
   std::pair<absl::string_view, int> result;
 
+  // DOC：
+  // 若 input 为空直接返回空的 result
   if (input.empty()) return result;
 
   if (matcher_ != nullptr) {
@@ -206,6 +250,8 @@ std::pair<absl::string_view, int> Normalizer::NormalizePrefix(
     // faster. (38k sentences/sec => 60k sentences/sec). Builder checks that the
     // result size never exceeds kMaxTrieResultsSize. This array consumes
     // 0.5kByte in stack, which is less than default stack frames (16kByte).
+    // 在堆栈中分配 trie_results，使编码速度提高 36%。（每秒 38K 句 => 每秒 60K 句）。
+    // 生成器检查结果大小是否从不超过 KmaxtrieResultsSize。此数组在堆栈中消耗 0.5kbyte，这小于默认堆栈帧（16kbyte）。
     Darts::DoubleArray::result_pair_type
         trie_results[Normalizer::kMaxTrieResultsSize];
 
@@ -229,6 +275,13 @@ std::pair<absl::string_view, int> Normalizer::NormalizePrefix(
       // The rune is set to be 0xFFFD (REPLACEMENT CHARACTER),
       // which is a valid Unicode of three bytes in utf8,
       // but here we only consume one byte.
+      // 找到一个格式不正确的 utf8。
+      // rune 被设置为 0xfffd（替换字符），
+      // 这是一个有效的 unicode，在 utf8 中为三个字节，
+      // 但这里我们只使用一个字节。
+
+      //DOC:
+      //若找到一个格式不正确的 utf8,将其设置为"\xEF\xBF\xBD"（0xfffd），并将 result 中它的长度设置为1字节。
       result.second = 1;
       static const char kReplacementChar[] = "\xEF\xBF\xBD";
       result.first = absl::string_view(kReplacementChar);
@@ -247,6 +300,8 @@ std::pair<absl::string_view, int> Normalizer::NormalizePrefix(
 }
 
 // static
+// DOC:
+// 将 trie_blob 与规范化字符串进行编码，返回编码后的字符串
 std::string Normalizer::EncodePrecompiledCharsMap(
     absl::string_view trie_blob, absl::string_view normalized) {
   // <trie size(4byte)><double array trie><normalized string>
@@ -258,6 +313,8 @@ std::string Normalizer::EncodePrecompiledCharsMap(
 }
 
 // static
+// DOC:
+// 将编码后的字符串进行解码，返回 trie_blob 与规范化字符串
 util::Status Normalizer::DecodePrecompiledCharsMap(
     absl::string_view blob, absl::string_view *trie_blob,
     absl::string_view *normalized) {
@@ -279,6 +336,10 @@ util::Status Normalizer::DecodePrecompiledCharsMap(
   return util::OkStatus();
 }
 
+// DOC:
+// PrefixMatcher(前缀匹配器)类的构造函数，用于初始化前缀匹配器。
+// 参数：
+//      const std::set<absl::string_view> &dic  -- 含有用于初始化前缀匹配器类对象已排序的 absl::string_view 类型字符串的关联容器。
 PrefixMatcher::PrefixMatcher(const std::set<absl::string_view> &dic) {
   if (dic.empty()) return;
   std::vector<const char *> key;
@@ -289,6 +350,15 @@ PrefixMatcher::PrefixMatcher(const std::set<absl::string_view> &dic) {
                            nullptr));
 }
 
+// DOC:
+// 用于寻找 trie_ 指针所指向的 DoubleArray 内的字符串中最长，且有指定的要查找的前缀的的字符串。
+// 如果没有找到匹配的字符串则将 found 设置为 false，同时返回一个 Unicode 字符的长度。
+// 如果找到则将 found 设置为 true，同时返回寻找到的匹配的字符串的 UTF8 编码长度
+// 参数：
+//      bool *found -- 用于表示寻找的结果，没有找到匹配的字符串则将 found 设置为 false，找到则将 found 设置为 true。
+//      absl::string_view w -- 指定的要查找的前缀。
+// 返回值：
+//      int -- 寻找到的匹配的字符串的UTF8编码长度。
 int PrefixMatcher::PrefixMatch(absl::string_view w, bool *found) const {
   if (trie_ == nullptr) {
     if (found) *found = false;
@@ -313,6 +383,11 @@ int PrefixMatcher::PrefixMatch(absl::string_view w, bool *found) const {
   return mblen;
 }
 
+// DOC:
+// 将“w”中的条目替换为“out”
+// 参数：
+//      absl::string_view w -- 被替换的字符串。
+//      absl::string_view out -- 用于替换的字符串。
 std::string PrefixMatcher::GlobalReplace(absl::string_view w,
                                          absl::string_view out) const {
   std::string result;

@@ -17,22 +17,44 @@
 #include "unicode_script_map.h"
 #include "util.h"
 
+// DOC: 命名空间 sentencepiece
 namespace sentencepiece {
+// DOC: 命名空间 sentencepiece::unicode_script
 namespace unicode_script {
 namespace {
+// DOC:
+// 语料所属字符集检测类
 class GetScriptInternal {
  public:
+// DOC:
+// GetScriptInternal 类构造函数 初始化字符集表
+// 
+// 参数:
+//      smap_ -- 字符集表存储变量的引用
   GetScriptInternal() { InitTable(&smap_); }
 
+  // DOC:
+  // 获取字符归属字符集类型
+  // 
+  // 参数:
+  //      c -- 待判断的字符
   ScriptType GetScript(char32 c) const {
+	// DOC:
+	// 调用针对 STL map 的通用查找方法
     return port::FindWithDefault(smap_, c, ScriptType::U_Common);
   }
 
  private:
+  // 语言表
   std::unordered_map<char32, ScriptType> smap_;
 };
 }  // namespace
 
+// DOC:
+// 获取字符归属字符集类型
+// 
+// 参数:
+//      c -- 待判断的字符
 ScriptType GetScript(char32 c) {
   static GetScriptInternal sc;
   return sc.GetScript(c);

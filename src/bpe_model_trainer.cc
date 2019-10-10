@@ -50,6 +50,7 @@ Trainer::Symbol *Trainer::GetPairSymbol(const Symbol *left,
     return nullptr;
   }
 
+  // 计算指纹
   const uint64 fp = port::FingerprintCat(left->fp, right->fp);
   const auto it = symbols_cache_.find(fp);
   if (it != symbols_cache_.end()) {
@@ -81,11 +82,13 @@ void Trainer::ComputeFreq(Symbol *symbol) const {
   if (symbol->freq > 0) {  // if freq == 0, re-computation is required.
     return;
   }
+  // 避免双倍计数。("AAA"中只有第一个出现的"AA"会被计数)
   // Avoids double-count. ("AAA" => only count the first "AA").
   Position prev_pos = {-1, 0};
   CHECK_EQ(0, symbol->freq);
   for (auto it = symbol->positions.begin(); it != symbol->positions.end();) {
     const Position pos = DecodePos(*it);
+	// 移除相邻重复项中的后一项（如"AAA"中后一个"AA"）以避免双倍计数。
     // There are two same bigrams in "AAA", [AA] [AA], and we want to
     // remove the second one to avoid double counts.
     // If the right symbol in the first bigram and the left symbol in the
@@ -181,6 +184,7 @@ util::Status Trainer::Train() {
   symbols_cache_.clear();
   active_symbols_.clear();
 
+  // 加载所有的句子。
   // Load all sentences
   RETURN_IF_ERROR(LoadSentences());
 
@@ -188,6 +192,7 @@ util::Status Trainer::Train() {
     SplitSentencesByWhitespace();
   }
 
+  // 初始化symbols_，symbols_[sid][i]存储一个一元符号。
   // Initializes symbols_. symbols_[sid][i] stores an unary symbol.
   symbols_.resize(sentences_.size());
   for (size_t i = 0; i < sentences_.size(); ++i) {
@@ -196,6 +201,7 @@ util::Status Trainer::Train() {
     }
   }
 
+  // 创建所有的二元符号。
   // Makes all bigram symbols.
   for (size_t sid = 0; sid < symbols_.size(); ++sid) {
     for (size_t i = 1; i < symbols_[sid].size(); ++i) {

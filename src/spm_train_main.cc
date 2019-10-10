@@ -26,6 +26,7 @@ static sentencepiece::TrainerSpec kDefaultTrainerSpec;
 static sentencepiece::NormalizerSpec kDefaultNormalizerSpec;
 }  // namespace
 
+// DOC:
 // 初始化flags，定义模型训练参数的数据类型，名称，默认值和帮助信息
 DEFINE_string(input, "", "comma separated list of input sentences");
 DEFINE_string(input_format, kDefaultTrainerSpec.input_format(),
@@ -111,7 +112,7 @@ DEFINE_string(unk_surface, kDefaultTrainerSpec.unk_surface(),
 // 生成分词模型.model，语料映射.vocab文件。
 //
 // Example:
-//      $spm_train_main --input=data/botchan.txt --model_prefix=m --vocab_size=1000
+//      $ spm_train_main --input=data/botchan.txt --model_prefix=m --vocab_size=1000
 int main(int argc, char *argv[]) {
   // DOC:
   // 解析命令行参数并修改对应Flag

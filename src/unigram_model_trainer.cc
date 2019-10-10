@@ -33,10 +33,17 @@
 #include "unicode_script.h"
 #include "util.h"
 
+// DOC:命名空间 sentencepiece::unigram
 namespace sentencepiece {
 namespace unigram {
 namespace {
 
+// DOC:
+//      计算传入参数的Digamma函数值
+// 参数:
+//      x -- 传入参数
+// 返回:
+//      Digamma(x)近似值
 double Digamma(double x) {
   double result = 0.0;
   for (; x < 7; ++x) result -= 1 / x;
@@ -49,6 +56,11 @@ double Digamma(double x) {
   return result;
 }
 
+// DOC:
+//      将概率转换为对数形式
+// 参数:
+//      begin -- 所需实现对数形式转换的起始位置
+//      end -- 所需实现对数形式转换的终止位置
 template <typename IT>
 void ToLogProb(IT begin, IT end) {
   float sum = 0.0;
@@ -62,16 +74,26 @@ void ToLogProb(IT begin, IT end) {
 }
 }  // namespace
 
+// DOC:
+//      对象创建
 TrainerModel::TrainerModel(const TrainerSpec &trainer_spec,
                            const NormalizerSpec &normalizer_spec)
     : trainer_spec_(trainer_spec), normalizer_spec_(normalizer_spec) {}
 
 TrainerModel::~TrainerModel() {}
 
+// DOC:
+//    返回完整的句段
+// 注意:
+//    只包含元信息 起始符/终止符等不包含在内
 const TrainerModel::SentencePieces &TrainerModel::GetSentencePieces() const {
   return sentencepieces_;
 }
 
+// DOC:
+//    对UnigramModel设置新的句段
+// 注意:
+//    只包含元信息 起始符/终止符等不包含在内
 void TrainerModel::SetSentencePieces(SentencePieces &&sentencepieces) {
   sentencepieces_ = std::move(sentencepieces);
   CHECK(!sentencepieces_.empty());
@@ -96,11 +118,14 @@ void TrainerModel::SetSentencePieces(SentencePieces &&sentencepieces) {
   CHECK_OK(status());
 }
 
+// DOC:
+//      返回种子分词块 用作EM(期望最大化)训练
 // Returns seed sentencepieces for EM training.
 TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() const {
   CHECK(!sentences_.empty());
   CHECK(!required_chars_.empty());
 
+  // 以'0x0000'为分隔符合并所有句子
   // Merges all sentences into one array with 0x0000 delimiter.
   std::vector<char32> array;
   std::unordered_map<std::string, int64> all_chars;
@@ -113,15 +138,23 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() const {
         all_chars[string_util::UnicodeCharToUTF8(c)] += w.second;
       }
     }
+    // 在每个句话后加入kSentenceBoundary 作为句段结束的标记
     array.push_back(kSentenceBoundary);  // sentence boundary marker.
   }
 
+  // DOC:
+  //    SA -- 前缀数组
+  //    L -- 内部结点左边界(句段起始位置)记录数组
+  //    R -- 内部结点右边界(句段终止位置)记录数组
+  //    D -- 内部结点深度(句段长度)记录数组
   const int n = array.size();
   std::vector<int> SA(n);  // suffix array
   std::vector<int> L(n);   // left boundaries of internal node
   std::vector<int> R(n);   // right boundaries of internal node
   std::vector<int> D(n);   // depths of internal node
 
+  // DOC:
+  //    构造前缀数组 以提取正在处理的子串
   // Makes a suffix array to extract all sub strings occurring
   // more than 2 times in the sentence.
   constexpr int kAlphabetSize = 0x110000;  // All UCS4 range.
@@ -140,6 +173,7 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() const {
     }
     const char32 *begin = &array[0] + offset;
     const char32 *end = &array[0] + offset + len;
+    // 若子串包含句段分隔符 则处理完毕
     // Skips if a substring contains a sentence boundary.
     if (std::find(begin, end, kSentenceBoundary) != end) {
       continue;
@@ -149,18 +183,21 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() const {
       continue;
     }
 
+    // 单词层面的分割采用默认的score = freq * len
     // character-wise coverage is the default score.
     const int freq = R[i] - L[i];
     const int score = freq * len;
     substr_index.emplace_back(i, score);
   }
 
+  // all_chars必须包含在种子分词块中
   // all_chars must be included in the seed sentencepieces.
   TrainerModel::SentencePieces seed_sentencepieces;
   for (const auto &it : Sorted(all_chars)) {
     seed_sentencepieces.emplace_back(it);
   }
 
+  // 对子串分割进行排序
   // Sort by the coverage of sub strings.
   for (const auto &p : Sorted(substr_index)) {
     const int offset = SA[L[p.first]];
@@ -187,6 +224,16 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() const {
   return seed_sentencepieces;
 }
 
+// DOC:
+//    进行EM(期望最大化)算法的E步 -- 求期望
+//
+// 参数:
+//    model -- 训练模型的引用
+//    objective -- 当前模型的负概率值
+//    num_tokens -- 训练集中的分词块总数
+//
+// 返回:
+//    返回期望值数组
 std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
                                      int64 *num_tokens) const {
   std::vector<std::vector<float>> expected(trainer_spec_.num_threads());
@@ -200,6 +247,7 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
     all_sentence_freq += w.second;
   }
 
+  // 同时求取期望值
   // Executes E step in parallel
   for (int n = 0; n < trainer_spec_.num_threads(); ++n) {
     pool->Schedule([&, n]() {
@@ -221,6 +269,7 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
   }
   pool.reset(nullptr);
 
+  // 进行期望值的叠加
   // Merges expectations
   for (int n = 1; n < trainer_spec_.num_threads(); ++n) {
     objs[0] += objs[n];
@@ -237,6 +286,15 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
   return expected[0];
 }
 
+// DOC:
+//    进行EM(期望最大化)算法的M步 -- 求极大
+//
+// 参数:
+//    model -- 训练模型引用
+//    expected -- 经E步处理所得的期望值数组引用
+//
+// 返回:
+//    返回处理后新的分词块数组
 TrainerModel::SentencePieces Trainer::RunMStep(
     const TrainerModel &model, const std::vector<float> &expected) const {
   const auto &sentencepieces = model.GetSentencePieces();
@@ -257,6 +315,10 @@ TrainerModel::SentencePieces Trainer::RunMStep(
     sum += freq;
   }
 
+  // DOC:
+  //    实现EM没有采用原始的EM算法
+  //    而是使用Bayesianified/DPified EM
+  //    此算法可以进行稀疏型先验
   // Here we do not use the original EM, but use the
   // Bayesianified/DPified EM algorithm.
   // https://cs.stanford.edu/~pliang/papers/tutorial-acl2007-talk.pdf
@@ -269,6 +331,9 @@ TrainerModel::SentencePieces Trainer::RunMStep(
   return new_sentencepieces;
 }
 
+// DOC:
+//    每次进行EM(期望最大化)子迭代后 对当前全部分词块进行剪枝
+//    剪去冗余部分 提高算法效率
 TrainerModel::SentencePieces Trainer::PruneSentencePieces(
     const TrainerModel &model) const {
   const auto &sentencepieces = model.GetSentencePieces();
@@ -277,6 +342,9 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
   std::vector<bool> always_keep(sentencepieces.size(), true);
   std::vector<std::vector<int>> alternatives(sentencepieces.size());
 
+  // DOC:
+  //    处理"在不选择当前分词块的条件下 概率值次高的路径"问题
+  //    并将处理结果保存在sentencepiece[i].alternatives[i]中
   // First, segments the current sentencepieces to know
   // how each sentencepiece is resegmented if this sentencepiece is removed
   // from the vocabulary.
@@ -288,6 +356,7 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
     model.PopulateNodes(&lattice);
     const auto nbests = lattice.NBest(2);
     if (nbests.size() == 1) {
+      // 如果无法找到次好结果 则总保留当前结点
       // No second-best result is found. always keep this sentencepiece.
       always_keep[i] = true;
       continue;
@@ -302,6 +371,9 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
     }
   }
 
+  // DOC:
+  //    计算unigram语言模型下所有分词块的概率
+  //    invert[i] -- 保存sentencepieces[i]出现的位置
   // Second, segments all sentences to compute likelihood
   // with a unigram language model. inverted[i] stores
   // the set of sentence index where the sentencepieces[i] appears.
@@ -353,6 +425,9 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
   std::vector<std::pair<int, float>> candidates;
   TrainerModel::SentencePieces new_sentencepieces;
 
+  // DOC:
+  //    计算如果sentencepiece[i]被移除后 LM(最速下降法)的概率值
+  //    由于准确计算损失较为困难 则采用以alternatives[i]代替sentencepiece[i]的方法估算损失值
   // Finally, computes how likely the LM likelihood is reduced if
   // the sentencepiece[i] is removed from the vocabulary.
   // Since the exact computation of loss is difficult, we compute the
@@ -360,9 +435,11 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
   // are replaced with alternatives[i] when sentencepiece[i] is removed.
   for (size_t i = 0; i < sentencepieces.size(); ++i) {
     if (freq[i] == 0 || !always_keep[i]) {
+      // 如果该分词块不出现在Viterbi路径中 则可将其安全移除
       // not found in Viterbi path. Can remove this entry safely.
       continue;
     } else if (alternatives[i].empty()) {
+      // 如果该分词块不存在可替换分词块 则保留该分词块
       // no alternatives. Keeps this entry.
       new_sentencepieces.push_back(sentencepieces[i]);
     } else {
@@ -372,9 +449,11 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
       }
       F /= vsum;  // normalizes by all sentence frequency.
 
+      // 保存sentencepiece[i]的概率对数值
       // The logprob with the sentencepiece[i].
       const float logprob_sp = log(freq[i]) - logsum;
 
+      // 在移除sentencepiece[i]后 其freq[i]根据alternatives重新计算
       // After removing the sentencepiece[i], its frequency freq[i] is
       // re-assigned to alternatives.
       // new_sum = current_sum - freq[i] + freq[i] * alternatives.size()
@@ -397,6 +476,8 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
       std::max<int>(desired_vocab_size_,
                     trainer_spec_.shrinking_factor() * sentencepieces.size());
 
+  // 保持新分词数组的大小是原分词数组大小 * shrinking_factor
+  // shrinking_factor默认值为0.75
   // Keeps trainer_spec_.shrinking_factor * sentencepieces.size() pieces.
   // shrinking_factor is 0.75 by default.
   for (const auto &w : Sorted(candidates)) {
@@ -409,6 +490,10 @@ TrainerModel::SentencePieces Trainer::PruneSentencePieces(
   return new_sentencepieces;
 }
 
+// DOC:
+//    通过对必要词块/控制字符/用户自定义词块的处理 决定最终分词块
+// 参数:
+//    model -- 训练模型的引用
 TrainerModel::SentencePieces Trainer::FinalizeSentencePieces(
     const TrainerModel &model) const {
   const auto &sentencepieces = model.GetSentencePieces();
@@ -416,6 +501,7 @@ TrainerModel::SentencePieces Trainer::FinalizeSentencePieces(
   std::unordered_map<std::string, float> sp(sentencepieces.begin(),
                                             sentencepieces.end());
 
+  // 必要单词必须加入到最终分词块中
   // required_chars_ must be included in the final sentencepieces.
   float min_score_penalty = 0.0;
   constexpr float kMinScorePenaltyDelta = 0.0001;
@@ -435,6 +521,7 @@ TrainerModel::SentencePieces Trainer::FinalizeSentencePieces(
   const int vocab_size_size = trainer_spec_.vocab_size() - meta_pieces_.size();
   CHECK_GT(vocab_size_size, 0);
 
+  // 保持所选分词块有更高的score
   // Then keeps sentencepieces with higher scores.
   for (const auto &w : Sorted(sentencepieces)) {
     if (port::ContainsKey(final_sentencepieces, w.first)) {
@@ -472,13 +559,16 @@ util::Status Trainer::Train() {
   desired_vocab_size_ = static_cast<size_t>(trainer_spec_.vocab_size() * 1.1);
 
   while (true) {
+    // 子EM的迭代过程
     // Sub-EM iteration.
     for (int iter = 0; iter < trainer_spec_.num_sub_iterations(); ++iter) {
+      // 进行E步
       // Executes E step
       float objective = 0.0;
       int64 num_tokens = 0;
       const auto expected = RunEStep(model, &objective, &num_tokens);
 
+      // 进行M步
       // Executes M step.
       auto new_sentencepieces = RunMStep(model, expected);
       model.SetSentencePieces(std::move(new_sentencepieces));
@@ -488,18 +578,24 @@ util::Status Trainer::Train() {
                 << " num_tokens/piece="
                 << 1.0 * num_tokens / model.GetPieceSize();
     }  // end of Sub EM iteration
+    // 子EM迭代过程结束
 
+    // DOC:
+    // 若句段规模达到期望规模 则停止迭代
     // Stops the iteration when the size of sentences reaches to the
     // desired symbol size.
     if (model.GetPieceSize() <= desired_vocab_size_) {
       break;
     }
 
+    // 对模型进行剪枝
     // Prunes pieces.
     auto new_sentencepieces = PruneSentencePieces(model);
     model.SetSentencePieces(std::move(new_sentencepieces));
   }  // end of EM iteration
+  // 整个EM迭代过程结束
 
+  // 最后调整分词数量与词库要求一致
   // Finally, adjusts the size of sentencepices to be |vocab_size|.
   final_pieces_ = FinalizeSentencePieces(model);
 

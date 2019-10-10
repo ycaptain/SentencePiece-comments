@@ -183,13 +183,16 @@ bool TrainerInterface::IsValidSentencePiece(
 
   for (size_t pos = 0; pos < sentencepiece.size(); ++pos) {
     const char32 c = sentencepiece[pos];
-    if (c == kUNKChar) {  // UNK must not be included // 未知字不能被合法的piece包含
+	// 未知字不能被合法的piece包含
+    if (c == kUNKChar) {  // UNK must not be included
       return false;
     }
-    if (c == 0x0000) {  // NULL is not allowed for Darts (TRIE). // NULL不被允许出现在piece中
+	// NULL不被允许出现在piece中
+    if (c == 0x0000) {  // NULL is not allowed for Darts (TRIE).
       return false;
     }
-    // kUPPBoundaryChar is included when split_by_upp_for_training is true. // 当设置split_by_upp_for_training为true时边缘字可以被合法的piece包含
+	// 当设置split_by_upp_for_training为true时边缘字可以被合法的piece包含
+    // kUPPBoundaryChar is included when split_by_upp_for_training is true.
     if (c == kUPPBoundaryChar) {
       return false;
     }

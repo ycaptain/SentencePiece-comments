@@ -19,6 +19,7 @@
 
 namespace sentencepiece {
 namespace unicode_script {
+// DOC: 定义枚举类型 ScriptType，表示字符集类型
 enum ScriptType {
   U_Adlam,
   U_Ahom,

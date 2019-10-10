@@ -17,6 +17,8 @@
 namespace sentencepiece {
 namespace unicode_script {
 namespace {
+// DOC: 初始化字符集表
+// 通过十六进制作为下标生成 Unicode 编码到字符集类型的多对一映射
 void InitTable(std::unordered_map<char32, ScriptType> *smap) {
   CHECK_NOTNULL(smap)->clear();
   for (char32 c = 0x0000; c <= 0x001F; ++c) (*smap)[c] = U_Common;

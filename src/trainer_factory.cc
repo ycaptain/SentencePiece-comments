@@ -22,6 +22,7 @@
 
 namespace sentencepiece {
 
+// 从训练器特性和规范器特性初始化训练器。
 // Instantiate Trainer instance from trainer_spec and normalization_spec
 std::unique_ptr<TrainerInterface> TrainerFactory::Create(
     const TrainerSpec &trainer_spec, const NormalizerSpec &normalizer_spec) {

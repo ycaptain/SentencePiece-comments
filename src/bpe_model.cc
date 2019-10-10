@@ -39,13 +39,18 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
     return {};
   }
 
+  // 符号对。
   struct SymbolPair {
+	// 左索引。
     int left;     // left index of this pair
+	// 右索引。
     int right;    // right index of this pair
+	// 该符号对的分数，越高越好(越有可能是一个词汇)。
     float score;  // score of this pair. large is better.
     size_t size;  // length of this piece
   };
 
+  // 符号对比较器
   class SymbolPairComparator {
    public:
     const bool operator()(SymbolPair *h1, SymbolPair *h2) {
@@ -55,9 +60,13 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
   };
 
   struct Symbol {
+	// 此符号的前一个有效符号的索引。 
     int prev;     // prev index of this symbol. -1 for BOS.
+	// 此符号的后一个有效符号的索引。 
     int next;     // next index of tihs symbol. -1 for EOS.
+	// 这个符号是否从未被合并。
     bool freeze;  // this symbol is never be merged.
+	// 字面值。
     absl::string_view piece;
   };
 

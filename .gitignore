@@ -10,6 +10,7 @@ Makefile.in
 .idea
 .czrc
 .vs
+out
 
 /autom4te.cache
 /autoscan.log
