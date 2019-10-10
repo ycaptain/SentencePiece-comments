@@ -1,4 +1,12 @@
 namespace {
+// DOC:
+// 返回训练器规则原型信息。
+//
+// 参数:
+//      message -- 原型信息
+//
+// 返回:
+//      训练器规则原型信息。
 inline std::string PrintProto(const TrainerSpec &message) {
   std::ostringstream os;
 
@@ -52,6 +60,14 @@ inline std::string PrintProto(const TrainerSpec &message) {
   return os.str();
 }
 
+// DOC:
+// 返回正规化器原型信息。
+//
+// 参数:
+//      message -- 原型信息
+//
+// 返回:
+//      正规化器原型信息。
 inline std::string PrintProto(const NormalizerSpec &message) {
   std::ostringstream os;
 
@@ -68,6 +84,16 @@ inline std::string PrintProto(const NormalizerSpec &message) {
 
 }  // namespace
 
+// DOC:
+// 配置训练器原型指令。
+//
+// 参数:
+//      name -- 指令名
+//      value -- 指令值
+//      message -- 原型对象
+//
+// 返回:
+//      配置状态。
 util::Status SentencePieceTrainer::SetProtoField(const std::string& name, const std::string& value, TrainerSpec *message) {
   CHECK_OR_RETURN(message);
 
@@ -345,6 +371,16 @@ util::Status SentencePieceTrainer::SetProtoField(const std::string& name, const 
     << "unknown field name \"" << name << "\" in TrainerSpec.";
 }
 
+// DOC:
+// 配置正规化器原型指令。
+//
+// 参数:
+//      name -- 指令名
+//      value -- 指令值
+//      message -- 原型对象
+//
+// 返回:
+//      配置状态。
 util::Status SentencePieceTrainer::SetProtoField(const std::string& name, const std::string& value, NormalizerSpec *message) {
   CHECK_OR_RETURN(message);
 

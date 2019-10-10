@@ -16,6 +16,8 @@
 #include "common.h"
 #include "testharness.h"
 
+// DOC:
+// 定义flags
 DEFINE_int32(int32_f, 10, "int32_flags");
 DEFINE_bool(bool_f, false, "bool_flags");
 DEFINE_int64(int64_f, 20, "int64_flags");
@@ -26,6 +28,8 @@ DEFINE_string(string_f, "str", "string_flags");
 namespace sentencepiece {
 namespace flags {
 
+// DOC:
+// flags默认值测试
 TEST(FlagsTest, DefaultValueTest) {
   EXPECT_EQ(10, FLAGS_int32_f);
   EXPECT_EQ(false, FLAGS_bool_f);
@@ -35,6 +39,8 @@ TEST(FlagsTest, DefaultValueTest) {
   EXPECT_EQ("str", FLAGS_string_f);
 }
 
+// DOC:
+// 帮助信息测试
 TEST(FlagsTest, PrintHelpTest) {
   const std::string help = PrintHelp("foobar");
   EXPECT_NE(std::string::npos, help.find("foobar"));
@@ -46,6 +52,8 @@ TEST(FlagsTest, PrintHelpTest) {
   EXPECT_NE(std::string::npos, help.find("string_flags"));
 }
 
+// DOC:
+// 解析命令行参数并修改对应 Flag测试
 TEST(FlagsTest, ParseCommandLineFlagsTest) {
   const char *kFlags[] = {"program",        "--int32_f=100",  "other1",
                           "--bool_f=true",  "--int64_f=200",  "--uint64_f=300",
@@ -67,6 +75,8 @@ TEST(FlagsTest, ParseCommandLineFlagsTest) {
   EXPECT_EQ("other3", rest[2]);
 }
 
+// DOC:
+// 解析命令行参数并修改对应 Flag测试
 TEST(FlagsTest, ParseCommandLineFlagsTest2) {
   const char *kFlags[] = {"program",       "--int32_f", "500",
                           "-int64_f=600",  "-uint64_f", "700",
@@ -82,6 +92,8 @@ TEST(FlagsTest, ParseCommandLineFlagsTest2) {
   EXPECT_TRUE(rest.empty());
 }
 
+// DOC:
+// 解析命令行参数并修改对应 Flag测试
 TEST(FlagsTest, ParseCommandLineFlagsTest3) {
   const char *kFlags[] = {"program", "--bool_f", "--int32_f", "800"};
 
@@ -93,42 +105,56 @@ TEST(FlagsTest, ParseCommandLineFlagsTest3) {
   EXPECT_TRUE(rest.empty());
 }
 
+// DOC:
+// 解析命令行参数帮助信息测试
 TEST(FlagsTest, ParseCommandLineFlagsHelpTest) {
   const char *kFlags[] = {"program", "--help"};
   EXPECT_DEATH(
       ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags)));
 }
 
+// DOC:
+// 解析命令行参数版本信息测试
 TEST(FlagsTest, ParseCommandLineFlagsVersionTest) {
   const char *kFlags[] = {"program", "--version"};
   EXPECT_DEATH(
       ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags)));
 }
 
+// DOC:
+// 解析未知命令行参数测试
 TEST(FlagsTest, ParseCommandLineFlagsUnknownTest) {
   const char *kFlags[] = {"program", "--foo"};
   EXPECT_DEATH(
       ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags)));
 }
 
+// DOC:
+// 解析非法布尔类型命令行参数测试
 TEST(FlagsTest, ParseCommandLineFlagsInvalidBoolTest) {
   const char *kFlags[] = {"program", "--bool_f=X"};
   EXPECT_DEATH(
       ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags)));
 }
 
+// DOC:
+// 解析空命令行参数测试
 TEST(FlagsTest, ParseCommandLineFlagsEmptyStringArgs) {
   const char *kFlags[] = {"program", "--string_f="};
   ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags));
   EXPECT_EQ("", FLAGS_string_f);
 }
 
+// DOC:
+// 解析空布尔类型命令行参数测试
 TEST(FlagsTest, ParseCommandLineFlagsEmptyBoolArgs) {
   const char *kFlags[] = {"program", "--bool_f"};
   ParseCommandLineFlags(arraysize(kFlags), const_cast<char **>(kFlags));
   EXPECT_TRUE(FLAGS_bool_f);
 }
 
+// DOC:
+// 解析空整形命令行参数测试
 TEST(FlagsTest, ParseCommandLineFlagsEmptyIntArgs) {
   const char *kFlags[] = {"program", "--int32_f"};
   EXPECT_DEATH(
