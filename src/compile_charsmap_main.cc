@@ -31,6 +31,7 @@ DEFINE_bool(output_precompiled_header, false, "make normalization_rule.h file");
 namespace sentencepiece {
 namespace {
 
+// 将string类型转为64位无符号整型数组
 std::string ToHexUInt64Array(
     const std::vector<std::pair<std::string, std::string>> &data,
     std::vector<size_t> *offset) {
@@ -43,6 +44,7 @@ std::string ToHexUInt64Array(
 
   size_t num = 0;
   for (const auto &p : data) {
+    // 定义开始和结束的指针
     const char *begin = p.second.data();
     const char *end = p.second.data() + p.second.size();
 
@@ -65,6 +67,10 @@ std::string ToHexUInt64Array(
   return os.str();
 }
 
+// 将string转换为16进制数据
+//
+// 参数：
+//      data ---- string 类型的数据
 std::string ToHexData(absl::string_view data) {
   const char *begin = data.data();
   const char *end = data.data() + data.size();
@@ -153,7 +159,10 @@ struct BinaryBlob {
 }  // namespace
 }  // namespace sentencepiece
 
+// DOC:
+// 处理字符表的主函数, 载入命令行参数, 处理字符表
 int main(int argc, char **argv) {
+    // 解析命令行参数并修改对应Flag
   sentencepiece::flags::ParseCommandLineFlags(argc, argv);
 
   const std::vector<
@@ -168,11 +177,13 @@ int main(int argc, char **argv) {
     Builder::CharsMap normalized_map;
     CHECK_OK(p.second(&normalized_map));
 
+    // 写入头文件
     // Write Header.
     std::string index;
     CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
     data.emplace_back(p.first, index);
 
+    // 写入tsv文件
     // Write TSV file.
     CHECK_OK(Builder::SaveCharsMap(p.first + ".tsv", normalized_map));
   }
