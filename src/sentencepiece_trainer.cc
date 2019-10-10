@@ -27,6 +27,7 @@
 
 namespace sentencepiece {
 namespace {
+    //设置默认的规范化器（Normalizer）对象的名称
 static constexpr char kDefaultNormalizerName[] = "nmt_nfkc";
 }  // namespace
 
@@ -34,12 +35,25 @@ static constexpr char kDefaultNormalizerName[] = "nmt_nfkc";
 #include "spec_parser.h"
 
 // static
+//DOC：
+//  用默认的规范化器设置与指定的训练方法训练SentencePiece模型
+// 参数:
+//      const TrainerSpec &trainer_spec -- 用以训练SentencePiece模型的指定训练方法
+// 返回:
+//      util::Status  -- 用于表示训练的状态与结果
 util::Status SentencePieceTrainer::Train(const TrainerSpec &trainer_spec) {
   NormalizerSpec normalizer_spec;
   return Train(trainer_spec, normalizer_spec);
 }
 
 // static
+// DOC：
+//  用指定的规范化器设置与指定的训练方法训练SentencePiece模型
+// 参数:
+//      const TrainerSpec &trainer_spec -- 用以训练SentencePiece模型的指定训练方法
+//      const NormalizerSpec &normalizer_spec -- 用以训练SentencePiece模型的指定规范化器设置
+// 返回:
+//      util::Status  -- 用于表示训练的状态与结果
 util::Status SentencePieceTrainer::Train(
     const TrainerSpec &trainer_spec, const NormalizerSpec &normalizer_spec) {
   auto copied_normalizer_spec = normalizer_spec;
@@ -53,6 +67,11 @@ util::Status SentencePieceTrainer::Train(
 }
 
 // static
+// 用于从已有的的规范化器名称生成规范化器设置
+// 参数:
+//      util::min_string_view name -- 用以生成规范化器设置的已有的的规范化器名称字符串
+// 返回:
+//      NormalizerSpec spec -- 生成的规范化器设置
 NormalizerSpec SentencePieceTrainer::GetNormalizerSpec(
     util::min_string_view name) {
   NormalizerSpec spec;
@@ -63,6 +82,14 @@ NormalizerSpec SentencePieceTrainer::GetNormalizerSpec(
 }
 
 // static
+//DOC:
+//  根据输入的命令行字符串指令重新配置SentencePiece模型的训练方法的设置与规范化器的设置
+// 参数:
+//      util::min_string_view args -- 输入的命令行字符串
+//      TrainerSpec *trainer_spec -- 需要被重新配置的SentencePiece模型的训练方法的设置
+//      NormalizerSpec *normalizer_spec -- 需要被重新配置的SentencePiece模型的规范化器的设置
+// 返回:
+//      util::Status  -- 用于表示操作的状态与结果
 util::Status SentencePieceTrainer::MergeSpecsFromArgs(
     util::min_string_view _args, TrainerSpec *trainer_spec,
     NormalizerSpec *normalizer_spec) {
@@ -112,6 +139,12 @@ util::Status SentencePieceTrainer::MergeSpecsFromArgs(
 }
 
 // static
+//DOC:
+//  根据输入的命令行字符串指令训练sentencepiece模型
+// 参数:
+//      util::min_string_view args -- 指定如何训练SentencePiece模型的命令行字符串
+// 返回:
+//      util::Status  -- 用于表示训练的状态与结果
 util::Status SentencePieceTrainer::Train(util::min_string_view args) {
   LOG(INFO) << "Running command: " << args.data();
   TrainerSpec trainer_spec;
@@ -121,6 +154,12 @@ util::Status SentencePieceTrainer::Train(util::min_string_view args) {
 }
 
 // static
+//DOC:
+// 用于对规范化器的规范增添数据与信息
+// 参数:
+//      NormalizerSpec &normalizer_spec -- 用以加入规范化器的规范中的数据与信息
+// 返回:
+//      util::Status  -- 用于表示操作的状态与结果
 util::Status SentencePieceTrainer::PopulateNormalizerSpec(
     NormalizerSpec *normalizer_spec) {
   CHECK_OR_RETURN(normalizer_spec);

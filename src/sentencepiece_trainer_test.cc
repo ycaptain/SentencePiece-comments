@@ -23,6 +23,13 @@ DECLARE_string(data_dir);
 namespace sentencepiece {
 namespace {
 
+    //DOC:
+    //用于检查用于SentencePiece模型训练的语料库大小、状态是否正常
+    // 参数:
+//      absl::string_view filename -- 存有用于训练的语料库的地址、文件名
+//      int expected_vocab_size -- 正常语料库应有的大小
+// 返回:
+//      void
 void CheckVocab(absl::string_view filename, int expected_vocab_size) {
   SentencePieceProcessor sp;
   CHECK_OK(sp.Load(filename.data()));

@@ -94,6 +94,7 @@ namespace normalizer {
 class Normalizer;
 }  // namespace normalizer
 
+// 通过枚举体实现错误消息和代码的映射
 namespace util {
 namespace error {
 enum Code {
@@ -117,6 +118,7 @@ enum Code {
 };
 }  // namespace error
 
+// 包含错误消息与一系列错误消息处理函数的状态类
 class Status {
  public:
   Status();
@@ -143,6 +145,7 @@ class Status {
 
 // Minimum string_view class that is used only for
 // the argument of public APIs.
+// 为公共API提供小型的字符串预览类
 class min_string_view {
  public:
   min_string_view() : ptr_(nullptr), length_(0) {}
@@ -165,6 +168,7 @@ class min_string_view {
 using bytes = std::string;
 }  // namespace util
 
+// SentencePiece的主要处理器类，包含了过程式的SentencePiece的主要处理函数
 class SentencePieceProcessor {
  public:
   SentencePieceProcessor();

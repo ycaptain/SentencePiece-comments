@@ -34,6 +34,7 @@ using port::MakeUnique;
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// 实现了模型接口的虚拟测试模型类
 class MockModel : public ModelInterface {
  public:
   void SetEncodeResult(absl::string_view input, const EncodeResult &output) {
@@ -82,6 +83,7 @@ class MockModel : public ModelInterface {
   const std::string kEmptyString;
 };
 
+// 接受编码结果类型参数，设置SentencePiece向量
 std::vector<std::string> GetSpVec(const EncodeResult &pieces) {
   std::vector<std::string> sps;
   for (const auto &p : pieces) {
@@ -90,6 +92,7 @@ std::vector<std::string> GetSpVec(const EncodeResult &pieces) {
   return sps;
 }
 
+// 接受编码结果类型参数，设置SentencePiece id 向量
 std::vector<int> GetIdVec(const EncodeResult &pieces) {
   std::vector<int> ids;
   for (const auto &p : pieces) {
@@ -98,6 +101,7 @@ std::vector<int> GetIdVec(const EncodeResult &pieces) {
   return ids;
 }
 
+// 接受SentencePieceTest类型参数，设置SentencePiece向量
 std::vector<std::string> GetSpVec(const SentencePieceText &spt) {
   std::vector<std::string> sps;
   for (auto &sp : spt.pieces()) {
@@ -595,6 +599,7 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
   }
 }
 
+// 接受模型原型类型的原型指针，string_view类型的piece和浮点分数的向原型中加入piece的函数
 void AddPiece(ModelProto *model_proto, absl::string_view piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
