@@ -21,18 +21,18 @@
 #include "testharness.h"
 #include "util.h"
 
-// ÃüÃû¿Õ¼ä sentencepiece
+// å‘½åç©ºé—´ sentencepiece
 namespace sentencepiece {
-// ÃüÃû¿Õ¼ä sentencepiece::word
+// å‘½åç©ºé—´ sentencepiece::word
 namespace word {
 namespace {
 
 // Space symbol (U+2581)
-// ¶¨Òå¿Õ¸ñ×Ö·û Unicode ±àÂë
+// å®šä¹‰ç©ºæ ¼å­—ç¬¦ Unicode ç¼–ç 
 #define WS "\xE2\x96\x81"
 
-// ¶¨Òå¿ªÊ¼ÑµÁ··½·¨
-// ´«ÈëÒ»¸ö´æÓĞ·Ö´ÊÎÄ±¾µÄÏòÁ¿ºÍÒ»¸ö int ĞÍÊıÖµ±íÊ¾½á¹ûÊıÁ¿´óĞ¡
+// å®šä¹‰å¼€å§‹è®­ç»ƒæ–¹æ³•
+// ä¼ å…¥ä¸€ä¸ªå­˜æœ‰åˆ†è¯æ–‡æœ¬çš„å‘é‡å’Œä¸€ä¸ª int å‹æ•°å€¼è¡¨ç¤ºç»“æœæ•°é‡å¤§å°
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
   test::ScopedTempFile input_scoped_file("input");
   test::ScopedTempFile model_scoped_file("model");
@@ -64,7 +64,7 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
   const auto &model = processor.model_proto();
   std::vector<std::string> pieces;
 
-  // È¥³ı<unk>, <s>, </s>
+  // å»é™¤<unk>, <s>, </s>
   // remove <unk>, <s>, </s>
   for (int i = 3; i < model.pieces_size(); ++i) {
     pieces.emplace_back(model.pieces(i).piece());
@@ -74,8 +74,8 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
 }
 }  // namespace
 
-// ¶ÔÑµÁ·Æ÷½øĞĞ»ù±¾·Ö´Ê¹ı³ÌµÄÑµÁ·
-// ¹Û²âÑµÁ·½á¹ûÊÇ·ñ·ûºÏÔ¤ÆÚ
+// å¯¹è®­ç»ƒå™¨è¿›è¡ŒåŸºæœ¬åˆ†è¯è¿‡ç¨‹çš„è®­ç»ƒ
+// è§‚æµ‹è®­ç»ƒç»“æœæ˜¯å¦ç¬¦åˆé¢„æœŸ
 TEST(TrainerTest, BasicTest) {
   EXPECT_EQ(WS "I " WS "apple " WS "have " WS "pen",
             RunTrainer({"I have a pen", "I have an apple", "apple pen"}, 10));

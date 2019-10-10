@@ -25,9 +25,9 @@
 namespace sentencepiece {
 namespace word {
 
-// ¶¨Òå word Ä£ĞÍµÄÑµÁ·Æ÷Àà
+// å®šä¹‰ word æ¨¡å‹çš„è®­ç»ƒå™¨ç±»
 util::Status Trainer::Train() {
-	// ¼ì²éÑµÁ·Æ÷µÄ×´Ì¬
+	// æ£€æŸ¥è®­ç»ƒå™¨çš„çŠ¶æ€
   RETURN_IF_ERROR(status());
 
   CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
@@ -35,7 +35,7 @@ util::Status Trainer::Train() {
 
   RETURN_IF_ERROR(LoadSentences());
 
-  // ¶¨ÒåÒ»¸öÎŞĞòÍ¼ÓÃÓÚ´¢´æµ¥´Ê³öÏÖÆµÂÊ
+  // å®šä¹‰ä¸€ä¸ªæ— åºå›¾ç”¨äºå‚¨å­˜å•è¯å‡ºç°é¢‘ç‡
   std::unordered_map<std::string, uint64> freq;
   for (const auto &it : sentences_) {
     for (const auto &s : SplitIntoWords(it.first)) {
@@ -43,7 +43,7 @@ util::Status Trainer::Train() {
     }
   }
 
-  // ¶¨Òå´Ê¿â´óĞ¡ Èô´Ê¿â´óĞ¡ÎªÁãÔò·µ»Ø
+  // å®šä¹‰è¯åº“å¤§å° è‹¥è¯åº“å¤§å°ä¸ºé›¶åˆ™è¿”å›
   const int vocab_size = trainer_spec_.vocab_size() - meta_pieces_.size();
   CHECK_GE_OR_RETURN(vocab_size, 0);
 
@@ -56,7 +56,7 @@ util::Status Trainer::Train() {
 
   CHECK_OR_RETURN(final_pieces_.empty());
 
-  // ¶ÔÃ¿¸öµ¥´Ê½øĞĞ¼ÆÊı
+  // å¯¹æ¯ä¸ªå•è¯è¿›è¡Œè®¡æ•°
   for (const auto &it : Sorted(freq)) {
     if (it.first.find(kUNKStr) != std::string::npos) {
       continue;
@@ -72,7 +72,7 @@ util::Status Trainer::Train() {
     trainer_spec_.set_vocab_size(final_pieces_.size() + meta_pieces_.size());
   }
 
-  // ½«ÑµÁ·ºÃµÄ´Ê¿â½øĞĞ´¢´æ
+  // å°†è®­ç»ƒå¥½çš„è¯åº“è¿›è¡Œå‚¨å­˜
   return Save();
 }
 }  // namespace word

@@ -22,17 +22,17 @@
 #include "testharness.h"
 #include "util.h"
 
-// DOC: ÃüÃû¿Õ¼ä sentencepiece
+// DOC: å‘½åç©ºé—´ sentencepiece
 namespace sentencepiece {
-// DOC: ÃüÃû¿Õ¼ä sentencepiece::word
+// DOC: å‘½åç©ºé—´ sentencepiece::word
 namespace word {
 namespace {
 
 // Space symbol (U+2581)
-// DOC: ¶¨Òå¿Õ¸ñ Unicode ±àÂë
+// DOC: å®šä¹‰ç©ºæ ¼ Unicode ç¼–ç 
 #define WS "\xe2\x96\x81"
 
-// ¶¨ÒåÒ»¸ö´´½¨Ä£ĞÍÔ­ĞÍµÄ·½·¨
+// å®šä¹‰ä¸€ä¸ªåˆ›å»ºæ¨¡å‹åŸå‹çš„æ–¹æ³•
 ModelProto MakeBaseModelProto() {
   ModelProto model_proto;
   auto *sp1 = model_proto.add_pieces();
@@ -49,7 +49,7 @@ ModelProto MakeBaseModelProto() {
   return model_proto;
 }
 
-// ¶¨ÒåÒ»¸öÏòÄ£ĞÍÔ­ĞÍÖĞÌí¼Ó´øÓĞÈ¨ÖØ score µÄÓï¾äÆ¬¶Î piece µÄ·½·¨
+// å®šä¹‰ä¸€ä¸ªå‘æ¨¡å‹åŸå‹ä¸­æ·»åŠ å¸¦æœ‰æƒé‡ score çš„è¯­å¥ç‰‡æ®µ piece çš„æ–¹æ³•
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -57,7 +57,7 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
   sp->set_score(score);
 }
 
-//¶Ô word Ä£ĞÍ½øĞĞ±àÂë²âÊÔ
+//å¯¹ word æ¨¡å‹è¿›è¡Œç¼–ç æµ‹è¯•
 TEST(WordModelTest, EncodeTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -89,7 +89,7 @@ TEST(WordModelTest, EncodeTest) {
   EXPECT_EQ(WS "abc", result[2].first);
 }
 
-// ¶Ô word Ä£ĞÍ½øĞĞ²»Ö§³ÖµÄ±àÂë²âÊÔ
+// å¯¹ word æ¨¡å‹è¿›è¡Œä¸æ”¯æŒçš„ç¼–ç æµ‹è¯•
 TEST(WordModelTest, NotSupportedTest) {
   ModelProto model_proto = MakeBaseModelProto();
   const Model model(model_proto);

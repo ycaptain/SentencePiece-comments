@@ -27,7 +27,7 @@ namespace word {
 // space-delimited tokens, then keep top
 // |vocab_size| frequent tokens.
 
-// word ÑµÁ·Ä£ÐÍµÄÑµÁ·Æ÷Àà
+// word è®­ç»ƒæ¨¡åž‹çš„è®­ç»ƒå™¨ç±»
 class Trainer : public TrainerInterface {
  public:
   Trainer(const TrainerSpec &trainer_spec,
