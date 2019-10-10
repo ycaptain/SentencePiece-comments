@@ -19,6 +19,8 @@
 
 namespace sentencepiece {
 
+// DOC:
+// 检测文件系统
 TEST(UtilTest, FilesystemTest) {
   test::ScopedTempFile sf("test_file");
 
@@ -46,6 +48,8 @@ TEST(UtilTest, FilesystemTest) {
   }
 }
 
+// DOC：
+// 检测文件系统无效的文件
 TEST(UtilTest, FilesystemInvalidFileTest) {
   auto input = filesystem::NewReadableFile("__UNKNOWN__FILE__");
   EXPECT_NOT_OK(input->status());

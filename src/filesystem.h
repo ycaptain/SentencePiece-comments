@@ -26,6 +26,7 @@
 
 namespace sentencepiece {
 namespace filesystem {
+// 可读取的文件类
 class ReadableFile {
  public:
   ReadableFile() {}
@@ -37,6 +38,7 @@ class ReadableFile {
   virtual bool ReadAll(std::string *line) = 0;
 };
 
+// 可写入的文件类
 class WritableFile {
  public:
   WritableFile() {}
