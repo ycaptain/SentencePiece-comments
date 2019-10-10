@@ -23,10 +23,12 @@
 namespace sentencepiece {
 namespace bpe {
 
+// 符号 Symbol 转 UTF-8 文本函数
 std::string Trainer::Symbol::ToString() const {
   return string_util::UnicodeTextToUTF8(chars);
 }
 
+// 获取一个字符对应的 Symbol 符号
 Trainer::Symbol *Trainer::GetCharSymbol(char32 c) {
   const uint64 freq = port::FindWithDefault(required_chars_, c, 1);
   CHECK_GT(freq, 0);
@@ -44,6 +46,7 @@ Trainer::Symbol *Trainer::GetCharSymbol(char32 c) {
   return s;
 }
 
+// 获取成对的符号
 Trainer::Symbol *Trainer::GetPairSymbol(const Symbol *left,
                                         const Symbol *right) {
   if (left == nullptr || right == nullptr || left->is_unk || right->is_unk) {
@@ -78,6 +81,7 @@ Trainer::Symbol *Trainer::GetPairSymbol(const Symbol *left,
   return s;
 }
 
+// 计算符号出现的频率 (词频)
 void Trainer::ComputeFreq(Symbol *symbol) const {
   if (symbol->freq > 0) {  // if freq == 0, re-computation is required.
     return;
@@ -111,6 +115,7 @@ void Trainer::ComputeFreq(Symbol *symbol) const {
   }
 }
 
+// 获取 sid 对应符号的下一个符号下标
 int Trainer::GetNextIndex(int sid, int index) const {
   for (size_t i = index + 1; i < symbols_[sid].size(); ++i) {
     if (symbols_[sid][i] == nullptr) continue;
@@ -119,6 +124,7 @@ int Trainer::GetNextIndex(int sid, int index) const {
   return -1;
 }
 
+// 获取 sid 对应符号的前一个符号下标
 int Trainer::GetPrevIndex(int sid, int index) const {
   for (int i = index - 1; i >= 0; --i) {
     if (symbols_[sid][i] == nullptr) continue;
@@ -127,6 +133,7 @@ int Trainer::GetPrevIndex(int sid, int index) const {
   return -1;
 }
 
+// 根据 sid 添加新的符号对
 void Trainer::AddNewPair(int sid, int left, int right) {
   if (left == -1 || right == -1) return;
   auto *symbol = GetPairSymbol(symbols_[sid][left], symbols_[sid][right]);
@@ -136,6 +143,7 @@ void Trainer::AddNewPair(int sid, int left, int right) {
   }
 }
 
+// 重置 sid 对应符号的词频
 void Trainer::ResetFreq(int sid, int left, int right, const Symbol *best) {
   if (left == -1 || right == -1) return;
   auto *symbol = GetPairSymbol(symbols_[sid][left], symbols_[sid][right]);
@@ -144,6 +152,7 @@ void Trainer::ResetFreq(int sid, int left, int right, const Symbol *best) {
   }
 }
 
+// 更新活跃符号表
 void Trainer::UpdateActiveSymbols() {
   std::vector<Symbol *> symbols;
   for (auto &it : symbols_cache_) {
@@ -173,6 +182,7 @@ void Trainer::UpdateActiveSymbols() {
   active_symbols_.insert(symbols.begin(), symbols.begin() + size);
 }
 
+// BPE 模型训练入口
 util::Status Trainer::Train() {
   RETURN_IF_ERROR(status());
 

@@ -31,8 +31,10 @@ namespace bpe {
 class Model : public ModelInterface {
  public:
   explicit Model(const ModelProto &model_proto);
+  // 模型接口 ModelInterface 对象析构函数
   ~Model() override;
 
+  // 正规化文本建模编码函数
   EncodeResult Encode(absl::string_view normalized) const override;
 };
 }  // namespace bpe

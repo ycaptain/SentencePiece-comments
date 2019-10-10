@@ -33,19 +33,20 @@ Model::Model(const ModelProto &model_proto) {
 
 Model::~Model() {}
 
+// 正规化文本建模编码函数
 std::vector<std::pair<absl::string_view, int>> Model::Encode(
     absl::string_view normalized) const {
   if (!status().ok() || normalized.empty()) {
     return {};
   }
 
-  // 符号对。
+  // 符号对
   struct SymbolPair {
-	// 左索引。
+	// 左索引
     int left;     // left index of this pair
-	// 右索引。
+	// 右索引
     int right;    // right index of this pair
-	// 该符号对的分数，越高越好(越有可能是一个词汇)。
+	// 该符号对的评分，越高表示越有可能是一个词汇
     float score;  // score of this pair. large is better.
     size_t size;  // length of this piece
   };
@@ -60,16 +61,17 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
   };
 
   struct Symbol {
-	// 此符号的前一个有效符号的索引。 
+	// 此符号的前一个有效符号的索引 -1 表示是第一个符号
     int prev;     // prev index of this symbol. -1 for BOS.
-	// 此符号的后一个有效符号的索引。 
+	// 此符号的后一个有效符号的索引 -1 表示是最后一个符号
     int next;     // next index of tihs symbol. -1 for EOS.
-	// 这个符号是否从未被合并。
+	// 这个符号是否从未被合并过
     bool freeze;  // this symbol is never be merged.
-	// 字面值。
+	// 词汇所对应的的语料
     absl::string_view piece;
   };
 
+// 定义符号的优先队列类型 Agenda
   using Agenda = std::priority_queue<SymbolPair *, std::vector<SymbolPair *>,
                                      SymbolPairComparator>;
   Agenda agenda;
@@ -78,6 +80,7 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
 
   // Reverse merge rules.
   // key: merged symbol, value: pair of original symbols.
+// 利用无序字典对符号进行反转合并
   std::unordered_map<absl::string_view,
                      std::pair<absl::string_view, absl::string_view>,
                      string_util::string_view_hash>

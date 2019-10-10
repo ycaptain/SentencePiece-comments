@@ -33,6 +33,7 @@ namespace {
 // Space symbol
 #define WS "\xe2\x96\x81"
 
+// 执行模型训练
 std::string RunTrainer(
     const std::vector<std::string> &input, int size,
     const std::vector<std::string> &user_defined_symbols = {}) {
@@ -78,6 +79,7 @@ std::string RunTrainer(
   return string_util::Join(pieces, " ");
 }
 
+// BPE 模型训练基础测试
 TEST(BPETrainerTest, BasicTest) {
   EXPECT_EQ("ab ra abra ad cad abracad abracadabra ac br a b r c d",
             RunTrainer({"abracadabra"}, 20));
@@ -89,6 +91,7 @@ TEST(BPETrainerTest, BasicTest) {
             RunTrainer({"pen", "pineapple", "apple"}, 20, {"app"}));
 }
 
+// BPE 模型端到端训练测试
 TEST(BPETrainerTest, EndToEndTest) {
   const test::ScopedTempFile sf("tmp_model");
   const std::string input =

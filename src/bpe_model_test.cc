@@ -20,6 +20,7 @@ namespace sentencepiece {
 namespace bpe {
 namespace {
 
+// 建立基础模型 ProtoType 数据
 ModelProto MakeBaseModelProto() {
   ModelProto model_proto;
   auto *sp1 = model_proto.add_pieces();
@@ -36,6 +37,7 @@ ModelProto MakeBaseModelProto() {
   return model_proto;
 }
 
+// 向 ModelProto 模型数据中添加语料
 void AddPiece(ModelProto *model_proto, const std::string &piece,
               float score = 0.0) {
   auto *sp = model_proto->add_pieces();
@@ -43,9 +45,11 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
   sp->set_score(score);
 }
 
+// BPE 模型编码测试
 TEST(BPEModelTest, EncodeTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
+  // 添加语料进行测试
   AddPiece(&model_proto, "ab", 0.0);         // 3
   AddPiece(&model_proto, "cd", -0.1);        // 4
   AddPiece(&model_proto, "abc", -0.2);       // 5
@@ -137,6 +141,7 @@ TEST(BPEModelTest, EncodeTest) {
   EXPECT_EQ("cd", result[3].first);
 }
 
+// BPE 模型模糊编码测试
 TEST(BPEModelTest, EncodeAmbiguousTest) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -183,6 +188,7 @@ TEST(BPEModelTest, EncodeAmbiguousTest) {
   EXPECT_EQ(broken_utf8, result[0].first);
 }
 
+// BPE 模型不支持的编码测试
 TEST(BPEModelTest, NotSupportedTest) {
   ModelProto model_proto = MakeBaseModelProto();
   const Model model(model_proto);
@@ -190,6 +196,7 @@ TEST(BPEModelTest, NotSupportedTest) {
   EXPECT_EQ(EncodeResult(), model.SampleEncode("test", 0.1));
 }
 
+// BPE 模型未用词编码测试
 TEST(BPEModelTest, EncodeWithUnusedTest) {
   ModelProto model_proto = MakeBaseModelProto();
 

@@ -196,7 +196,6 @@ std::vector<absl::string_view> SplitPiece(absl::string_view str,
 std::string Join(const std::vector<std::string> &tokens,
                  absl::string_view delim);
 
-
 // DOC:
 // 针对 int 实现的文本合并函数
 // 将传入的 int 整形数组以 delim 作为分隔符合并为一个字符串
@@ -253,6 +252,7 @@ inline bool DecodePOD(absl::string_view str, T *result) {
   memcpy(result, str.data(), sizeof(T));
   return true;
 }
+
 // DOC:
 // 将传入的 POD (平凡数据类型) 值转换为 std::string 字符串
 // 参数:
@@ -447,6 +447,7 @@ char32 DecodeUTF8(const char *begin, const char *end, size_t *mblen);
 inline char32 DecodeUTF8(absl::string_view input, size_t *mblen) {
   return DecodeUTF8(input.data(), input.data() + input.size(), mblen);
 }
+
 // DOC:
 // 判断是否为有效的 UTF-8 字符
 // 
