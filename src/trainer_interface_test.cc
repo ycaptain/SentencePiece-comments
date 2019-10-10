@@ -20,6 +20,7 @@
 
 namespace sentencepiece {
 
+// 空格符号
 // Space symbol
 #define WS "\xe2\x96\x81"
 

@@ -20,6 +20,7 @@
 namespace sentencepiece {
 namespace {
 
+// 空格
 #define WS "\xe2\x96\x81"
 
 const std::vector<TrainerSpec::ModelType> kModelTypes = {
