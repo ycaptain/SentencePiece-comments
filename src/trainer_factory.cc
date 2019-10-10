@@ -22,7 +22,14 @@
 
 namespace sentencepiece {
 
-// 从训练器特性和规范器特性初始化训练器。
+// 从训练器特性和正规器特性初始化训练器。
+// 
+// 参数：
+//       trainer_spec ---- 训练器特性
+//       normalizer_spec ---- 正规器特性
+//
+// 返回：
+//       训练器的唯一指针
 // Instantiate Trainer instance from trainer_spec and normalization_spec
 std::unique_ptr<TrainerInterface> TrainerFactory::Create(
     const TrainerSpec &trainer_spec, const NormalizerSpec &normalizer_spec) {
